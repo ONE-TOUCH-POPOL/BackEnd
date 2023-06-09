@@ -1,52 +1,37 @@
 package com.onepopol.member;
 
-import java.beans.Transient;
-
-import javax.persistence.Entity;
-import javax.persistence.Id;
-
-import com.onepopol.member.authority.MemberAuthority;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
-/**
- * 1. JPA 를 이용하기 위해 기본 생성자를 Lombok 으로 선언 (@NoArgsConstructor)
- * 2. 데이터베이스 테이블과 매핑되는 클래스임을 선언 (@Entity)
- */
+import javax.persistence.*;
+import java.sql.Timestamp;
+
+@Entity
+@Data
 @NoArgsConstructor
-@Getter
-@Entity(name = "member")
+@Table(name="member")
 public class Member {
-    // id 컬럼을 MEMBER 테이블의 기본키로 설정
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String username;
     private String password;
-    private MemberAuthority authority;
+    private String email;
+    private String role; // ROLE_USER, ROLE_ADMIN
+
+    private String provider;
+    private String providerId;
+    @CreationTimestamp // INSERT 쿼리 시 현재 시간으로 생성
+    private Timestamp createDate;
 
     @Builder
-    public Member(String id, String password, MemberAuthority authority) {
-        this.id = id;
+    public Member(String username, String password, String email, String role, String provider, String providerId, Timestamp createDate) {
+        this.username = username;
         this.password = password;
-        this.authority = authority;
-    }
-
-    /**
-     * DTO 선언부
-     */
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    public static class SaveRequest {
-        private String id;
-        private String password;
-        private MemberAuthority authority;
-
-        @Transient
-        public Member toEntity() {
-            return Member.builder()
-                    .id(this.id)
-                    .password(this.password)
-                    .authority(this.authority)
-                    .build();
-        }
+        this.email = email;
+        this.role = role;
+        this.provider = provider;
+        this.providerId = providerId;
+        this.createDate = createDate;
     }
 }
