@@ -17,7 +17,7 @@ public class MemberService implements UserDetailsService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public void memberRegister(Member.SaveRequest member) {
+    public void save(Member.SaveRequest member) {
         member.setPassword(passwordEncoder.encode(member.getPassword()));
 
         memberDao.save(member.toEntity());
