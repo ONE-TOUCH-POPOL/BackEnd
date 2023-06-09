@@ -8,6 +8,7 @@ class OnepopolApplicationTests {
 
 	@Test
 	void contextLoads() {
+
 	}
 
 }
