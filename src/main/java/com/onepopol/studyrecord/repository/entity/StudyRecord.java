@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -26,10 +26,10 @@ public class StudyRecord extends TimeStamped {
 
     private String category;
 
-    private LocalDateTime recordDate;
+    private LocalDate recordDate;
 
     @Builder
-    public StudyRecord(String title, String content, String category, LocalDateTime recordDate) {
+    public StudyRecord(String title, String content, String category, LocalDate recordDate) {
         this.title = title;
         this.content = content;
         this.category = category;
