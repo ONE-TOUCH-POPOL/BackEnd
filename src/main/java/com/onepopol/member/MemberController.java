@@ -5,11 +5,14 @@ import com.onepopol.member.dto.MemberSignupRequest;
 import com.onepopol.member.dto.TokenDto;
 import com.onepopol.member.service.MemberAuthenticationService;
 import com.onepopol.member.service.MemberManagementService;
+import com.onepopol.utils.ApiResult;
+import com.onepopol.utils.Apiutils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 @RestController
@@ -25,17 +28,17 @@ public class MemberController {
 
     // 회원가입
     @PostMapping("/signup")
-    public ResponseEntity<Void> signup(@RequestBody @Valid MemberSignupRequest memberSignupRequest) {
+    public ApiResult<?> signup(@RequestBody @Valid MemberSignupRequest memberSignupRequest) {
         String encodedPassword = encoder.encode(memberSignupRequest.getPassword());
         MemberSignupRequest newMemberSignupRequest = MemberSignupRequest.encodePassword(memberSignupRequest, encodedPassword);
 
         memberManagementService.registerUser(newMemberSignupRequest);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return Apiutils.success("회원가입 성공");
     }
 
     // 로그인 -> 토큰 발급
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody @Valid MemberLoginRequest memberLoginRequest) {
+    public ApiResult<?> login(@RequestBody @Valid MemberLoginRequest memberLoginRequest, HttpServletResponse response) {
         // User 등록 및 Refresh Token 저장
         TokenDto tokenDto = memberAuthenticationService.login(memberLoginRequest);
 
@@ -46,19 +49,19 @@ public class MemberController {
                 .secure(true)
                 .build();
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, httpCookie.toString())
-                // AT 저장
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenDto.getAccessToken())
-                .build();
+        response.setHeader(HttpHeaders.SET_COOKIE, httpCookie.toString());
+        response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + tokenDto.getAccessToken());
+
+        return Apiutils.success("로그인 성공");
     }
 
+    // 유효하지 않은 token이나 blank 값을 보낼시 HttpStatus.OK 리턴
     @PostMapping("/validate")
-    public ResponseEntity<?> validate(@RequestHeader("Authorization") String requestAccessToken) {
+    public ApiResult<?> validate(@RequestHeader("Authorization") String requestAccessToken) {
         if (!memberAuthenticationService.validate(requestAccessToken)) {
-            return ResponseEntity.status(HttpStatus.OK).build(); // 재발급 필요X
+            return Apiutils.success("Valid"); // 재발급 필요X
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // 재발급 필요
+            return Apiutils.success("unValid"); // 재발급 필요
         }
     }
     // 토큰 재발급
