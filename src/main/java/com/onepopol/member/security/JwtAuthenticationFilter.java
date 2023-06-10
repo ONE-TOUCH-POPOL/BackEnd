@@ -38,8 +38,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 log.debug("Save authentication in SecurityContextHolder.");
-            }else if(accessToken != null && !jwtTokenProvider.validateAccessTokenOnlyExpired(accessToken)){ // 유효하지만 만료된 경우
-                System.out.println(accessToken);
+            }else if(accessToken != null && jwtTokenProvider.validateAccessTokenOnlyExpired(accessToken)){ // 유효하지만 만료된 경우
                 response.setStatus(HttpStatus.OK.value());
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
