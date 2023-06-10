@@ -1,7 +1,7 @@
 package com.onepopol.member.security;
 
-import com.onepopol.member.dto.AuthDto;
-import com.onepopol.member.service.RedisService;
+import com.onepopol.member.dto.TokenDto;
+import com.onepopol.member.service.MemberRedisService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -22,8 +22,8 @@ import java.util.Date;
 @Transactional(readOnly = true)
 public class JwtTokenProvider implements InitializingBean {
 
-    private final UserDetailsServiceImpl userDetailsService;
-    private final RedisService redisService;
+    private final MemberDetailsServiceImpl userDetailsService;
+    private final MemberRedisService memberRedisService;
 
     private static final String AUTHORITIES_KEY = "role";
     private static final String EMAIL_KEY = "email";
@@ -36,13 +36,13 @@ public class JwtTokenProvider implements InitializingBean {
     private final Long refreshTokenValidityInMilliseconds;
 
     public JwtTokenProvider(
-            UserDetailsServiceImpl userDetailsService,
-            RedisService redisService,
+            MemberDetailsServiceImpl userDetailsService,
+            MemberRedisService memberRedisService,
             @Value("${jwt.secret}") String secretKey,
             @Value("${jwt.access-token-validity-in-seconds}") Long accessTokenValidityInMilliseconds,
             @Value("${jwt.refresh-token-validity-in-seconds}") Long refreshTokenValidityInMilliseconds) {
         this.userDetailsService = userDetailsService;
-        this.redisService = redisService;
+        this.memberRedisService = memberRedisService;
         this.secretKey = secretKey;
         // seconds -> milliseconds
         this.accessTokenValidityInMilliseconds = accessTokenValidityInMilliseconds * 1000;
@@ -57,7 +57,7 @@ public class JwtTokenProvider implements InitializingBean {
     }
 
     @Transactional
-    public AuthDto.TokenDto createToken(String email, String authorities){
+    public TokenDto createToken(String email, String authorities){
         Long now = System.currentTimeMillis();
 
         String accessToken = Jwts.builder()
@@ -79,7 +79,7 @@ public class JwtTokenProvider implements InitializingBean {
                 .signWith(signingKey, SignatureAlgorithm.HS512)
                 .compact();
 
-        return new AuthDto.TokenDto(accessToken, refreshToken);
+        return new TokenDto(accessToken, refreshToken);
     }
 
 
@@ -99,8 +99,8 @@ public class JwtTokenProvider implements InitializingBean {
 
     public Authentication getAuthentication(String token) {
         String email = getClaims(token).get(EMAIL_KEY).toString();
-        UserDetailsImpl userDetailsImpl = userDetailsService.loadUserByUsername(email);
-        return new UsernamePasswordAuthenticationToken(userDetailsImpl, "", userDetailsImpl.getAuthorities());
+        MemberDetailsImpl memberDetailsImpl = userDetailsService.loadUserByUsername(email);
+        return new UsernamePasswordAuthenticationToken(memberDetailsImpl, "", memberDetailsImpl.getAuthorities());
     }
 
     public long getTokenExpirationTime(String token) {
@@ -112,7 +112,7 @@ public class JwtTokenProvider implements InitializingBean {
 
     public boolean validateRefreshToken(String refreshToken){
         try {
-            if (redisService.getValues(refreshToken).equals("delete")) { // 회원 탈퇴했을 경우
+            if (memberRedisService.getValues(refreshToken).equals("delete")) { // 회원 탈퇴했을 경우
                 return false;
             }
             Jwts.parserBuilder()
@@ -139,8 +139,8 @@ public class JwtTokenProvider implements InitializingBean {
     // Filter에서 사용
     public boolean validateAccessToken(String accessToken) {
         try {
-            if (redisService.getValues(accessToken) != null // NPE 방지
-                    && redisService.getValues(accessToken).equals("logout")) { // 로그아웃 했을 경우
+            if (memberRedisService.getValues(accessToken) != null // NPE 방지
+                    && memberRedisService.getValues(accessToken).equals("logout")) { // 로그아웃 했을 경우
                 return false;
             }
             Jwts.parserBuilder()

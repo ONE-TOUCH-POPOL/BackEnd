@@ -1,35 +1,35 @@
 package com.onepopol.member.security;
 
-import com.onepopol.member.domain.User;
+import com.onepopol.member.repository.entity.Member;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class UserDetailsImpl implements UserDetails {
+public class MemberDetailsImpl implements UserDetails {
 
-    private final User user;
+    private final Member member;
 
-    public UserDetailsImpl(User user) {
-        this.user = user;
+    public MemberDetailsImpl(Member member) {
+        this.member = member;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(() -> user.getRole().getKey()); // key: ROLE_권한
+        authorities.add(() -> member.getRole().getKey()); // key: ROLE_권한
         return authorities;
     }
 
     @Override
     public String getUsername() {
-        return user.getEmail();
+        return member.getEmail();
     }
 
     @Override
     public String getPassword() {
-        return user.getPassword();
+        return member.getPassword();
     }
 
 
