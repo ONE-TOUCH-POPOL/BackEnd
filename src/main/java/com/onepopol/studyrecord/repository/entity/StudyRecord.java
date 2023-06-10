@@ -28,11 +28,14 @@ public class StudyRecord extends TimeStamped {
 
     private LocalDate recordDate;
 
+    private Long user_id;
+
     @Builder
-    public StudyRecord(String title, String content, String category, LocalDate recordDate) {
+    public StudyRecord(String title, String content, String category, LocalDate recordDate, Long user_id) {
         this.title = title;
         this.content = content;
         this.category = category;
         this.recordDate = recordDate;
+        this.user_id = user_id;
     }
 }

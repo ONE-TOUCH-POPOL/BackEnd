@@ -32,6 +32,7 @@ public class StudyRecordCreate {
                 .content(content)
                 .category(category)
                 .recordDate(recordDate)
+                .user_id(user_id)
                 .build();
     }
 }

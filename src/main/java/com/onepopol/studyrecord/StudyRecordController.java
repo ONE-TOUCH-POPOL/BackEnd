@@ -1,16 +1,20 @@
 package com.onepopol.studyrecord;
 
 import com.onepopol.config.ValidationException;
+import com.onepopol.member.security.UserDetailsImpl;
 import com.onepopol.studyrecord.dto.StudyRecordCreate;
 import com.onepopol.studyrecord.service.StudyRecordCrudService;
 import com.onepopol.utils.ApiResult;
 import com.onepopol.utils.Apiutils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -27,6 +31,9 @@ public class StudyRecordController {
             List<FieldError> fieldErrors = bindingResult.getFieldErrors();
             throw new ValidationException(fieldErrors);
         }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        studyRecordCreate.setUser_id(userDetails.getUserId());
         Long result = studyRecordCrudService.addStudyRecord(studyRecordCreate);
         return Apiutils.success("학습 기록 작성 성공");
     }
