@@ -162,7 +162,7 @@ public class JwtTokenProvider implements InitializingBean {
                     .getExpiration()
                     .before(new Date());
         } catch(ExpiredJwtException e) {
-            return false;
+            return true;
         } catch (Exception e) {
             return false;
         }
