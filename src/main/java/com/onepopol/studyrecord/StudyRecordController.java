@@ -3,6 +3,7 @@ package com.onepopol.studyrecord;
 import com.onepopol.config.ValidationException;
 import com.onepopol.member.security.UserDetailsImpl;
 import com.onepopol.studyrecord.dto.StudyRecordCreate;
+import com.onepopol.studyrecord.dto.StudyRecordGetResponse;
 import com.onepopol.studyrecord.service.StudyRecordCrudService;
 import com.onepopol.utils.ApiResult;
 import com.onepopol.utils.Apiutils;
@@ -33,8 +34,24 @@ public class StudyRecordController {
         }
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        studyRecordCreate.setUser_id(userDetails.getUserId());
+        studyRecordCreate.setUserId(userDetails.getUserId());
         Long result = studyRecordCrudService.addStudyRecord(studyRecordCreate);
         return Apiutils.success("학습 기록 작성 성공");
     }
+
+    @ResponseBody
+    @GetMapping
+    public ApiResult<?> testUserInfo(Principal principal) {
+        return Apiutils.success(principal);
+    }
+
+    @ResponseBody
+    @GetMapping("/all")
+    public ApiResult<?> studyRecordGetAll() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        List<StudyRecordGetResponse> res = studyRecordCrudService.getStudyRecordByUserId(userDetails.getUserId());
+        return Apiutils.success(res);
+    }
+
 }

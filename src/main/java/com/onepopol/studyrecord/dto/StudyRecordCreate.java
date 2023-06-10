@@ -21,7 +21,7 @@ public class StudyRecordCreate {
 
     private String category;
 
-    private Long user_id;
+    private Long userId;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate recordDate;
@@ -32,7 +32,7 @@ public class StudyRecordCreate {
                 .content(content)
                 .category(category)
                 .recordDate(recordDate)
-                .user_id(user_id)
+                .userId(userId)
                 .build();
     }
 }
