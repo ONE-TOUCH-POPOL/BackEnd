@@ -17,7 +17,6 @@ public class StudyRecordController {
     @PostMapping("/create")
     public ApiResult<?> studyRecordAdd(@RequestBody StudyRecordCreate studyRecordCreate) {
         Long result = studyRecordCrudService.addStudyRecord(studyRecordCreate);
-
         return Apiutils.success("학습 기록 작성 성공");
     }
 }
