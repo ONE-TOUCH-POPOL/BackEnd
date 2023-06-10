@@ -55,15 +55,6 @@ public class MemberController {
         return Apiutils.success("로그인 성공");
     }
 
-    // 유효하지 않은 token이나 blank 값을 보낼시 HttpStatus.OK 리턴
-    @PostMapping("/validate")
-    public ApiResult<?> validate(@RequestHeader("Authorization") String requestAccessToken) {
-        if (!memberAuthenticationService.validate(requestAccessToken)) {
-            return Apiutils.success("Valid"); // 재발급 필요X
-        } else {
-            return Apiutils.success("unValid"); // 재발급 필요
-        }
-    }
     // 토큰 재발급
     @PostMapping("/reissue")
     public ResponseEntity<?> reissue(@CookieValue(name = "refresh-token") String requestRefreshToken,

@@ -19,4 +19,9 @@ public class StudyRecordController {
         Long result = studyRecordCrudService.addStudyRecord(studyRecordCreate);
         return Apiutils.success("학습 기록 작성 성공");
     }
+
+    @PostMapping("/test")
+    public String test(){
+        return "test";
+    }
 }
