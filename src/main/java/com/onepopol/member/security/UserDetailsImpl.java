@@ -32,6 +32,9 @@ public class UserDetailsImpl implements UserDetails {
         return user.getPassword();
     }
 
+    public Long getUserId() {
+        return user.getId();
+    }
 
     // == 세부 설정 == //
 
