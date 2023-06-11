@@ -38,10 +38,7 @@ class StudyRecordTest {
 
         // Then
         StudyRecord res = studyRecordRepository.getReferenceById(studyRecordId);
-        Assertions.assertEquals(res.getTitle(), title);
-        Assertions.assertEquals(res.getContent(), content);
-        Assertions.assertEquals(res.getRecordDate(), date);
-        Assertions.assertEquals(res.getUserId(), userId);
+        Assertions.assertEquals(studyRecord, res);
 
     }
 }
