@@ -2,6 +2,7 @@ package com.onepopol.studyrecord.repository.entity;
 
 import com.onepopol.studyrecord.repository.StudyRecordRepository;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,6 +17,7 @@ class StudyRecordTest {
 
     @Test
     @Transactional
+    @DisplayName("학습기록 작성 테스트")
     public void testStudyRecord() {
         // Given
         String title = "테스트 제목";
