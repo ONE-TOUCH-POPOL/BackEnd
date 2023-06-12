@@ -50,6 +50,8 @@ public class SecurityConfig {
         http
                 // jwt 토큰 사용을 위한 설정
                 .csrf().disable()
+                .cors()
+                .and()
                 .httpBasic().disable()
                 .formLogin().disable()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
