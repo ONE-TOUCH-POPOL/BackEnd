@@ -14,7 +14,7 @@ jobs:
       - name: Set Yaml #yml 설치
         uses: microsoft/variable-substitution@v1
         with:
-          files: ./src/main/resources/application-prod.yml
+          files: ./src/main/resources/application.yml
         env:
           spring.datasource.username: ${{ secrets.DB_USERNAME }}
           spring.datasource.password: ${{ secrets.DB_PASSWORD }}
