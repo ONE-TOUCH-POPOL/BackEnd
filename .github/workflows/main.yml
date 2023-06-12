@@ -18,7 +18,7 @@ jobs:
         env:
           spring.datasource.url: ${{ secrets.DB_URL }}
           spring.datasource.username: ${{ secrets.DB_USERNAME }}
-          spring.datasource.password: ${{ secrets.DB_PASSWORD }}
+          spring.datasource.password: ${{ secrets.DB_USER_PASSWORD }}
 
       - name: 스프링부트 애플리케이션 빌드 # (1)
         run: ./gradlew build
