@@ -67,4 +67,31 @@ class StudyRecordTest {
         Assertions.assertEquals(res.getStatus().getValue(), Status.ACTIVE.getValue());
 
     }
+
+    @Test
+    @Transactional
+    @DisplayName("Status값을 임의로 변경")
+    public void testStudyRecordChangeStatusValue() {
+        // Given
+        String title = "테스트 제목";
+        String content = "테스트 내용";
+        LocalDate date = LocalDate.now();
+        Long userId = 1L;
+
+        StudyRecord studyRecord = new StudyRecord().builder()
+                .title(title)
+                .content(content)
+                .recordDate(date)
+                .userId(userId)
+                .build();
+        // When
+        Long studyRecordId = studyRecordRepository.save(studyRecord).getId();
+        StudyRecord res = studyRecordRepository.getReferenceById(studyRecordId);
+        res.setStatus(Status.INACTIVE);
+
+        // Then
+        StudyRecord changeRes = studyRecordRepository.getReferenceById(studyRecordId);
+        Assertions.assertEquals(res.getStatus().getValue(), Status.INACTIVE.getValue());
+
+    }
 }
