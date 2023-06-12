@@ -1,41 +1,46 @@
-package com.onepopol.member.controller;
+package com.onepopol.member;
 
-import com.onepopol.member.dto.AuthDto;
-import com.onepopol.member.service.AuthService;
-import com.onepopol.member.service.UserService;
+import com.onepopol.member.dto.MemberLoginRequest;
+import com.onepopol.member.dto.MemberSignupRequest;
+import com.onepopol.member.dto.TokenDto;
+import com.onepopol.member.service.MemberAuthenticationService;
+import com.onepopol.member.service.MemberManagementService;
+import com.onepopol.utils.ApiResult;
+import com.onepopol.utils.Apiutils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
-public class AuthApiController {
+public class MemberController {
 
-    private final AuthService authService;
-    private final UserService userService;
+    private final MemberAuthenticationService memberAuthenticationService;
+    private final MemberManagementService memberManagementService;
     private final BCryptPasswordEncoder encoder;
 
     private final long COOKIE_EXPIRATION = 7776000; // 90일
 
     // 회원가입
     @PostMapping("/signup")
-    public ResponseEntity<Void> signup(@RequestBody @Valid AuthDto.SignupDto signupDto) {
-        String encodedPassword = encoder.encode(signupDto.getPassword());
-        AuthDto.SignupDto newSignupDto = AuthDto.SignupDto.encodePassword(signupDto, encodedPassword);
+    public ApiResult<?> signup(@RequestBody @Valid MemberSignupRequest memberSignupRequest) {
+        String encodedPassword = encoder.encode(memberSignupRequest.getPassword());
+        MemberSignupRequest newMemberSignupRequest = MemberSignupRequest.encodePassword(memberSignupRequest, encodedPassword);
 
-        userService.registerUser(newSignupDto);
-        return new ResponseEntity<>(HttpStatus.OK);
+        memberManagementService.registerUser(newMemberSignupRequest);
+        return Apiutils.success("회원가입 성공");
     }
 
     // 로그인 -> 토큰 발급
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody @Valid AuthDto.LoginDto loginDto) {
+    public ApiResult<?> login(@RequestBody @Valid MemberLoginRequest memberLoginRequest, HttpServletResponse response) {
         // User 등록 및 Refresh Token 저장
-        AuthDto.TokenDto tokenDto = authService.login(loginDto);
+        TokenDto tokenDto = memberAuthenticationService.login(memberLoginRequest);
 
         // RT 저장
         HttpCookie httpCookie = ResponseCookie.from("refresh-token", tokenDto.getRefreshToken())
@@ -44,26 +49,17 @@ public class AuthApiController {
                 .secure(true)
                 .build();
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, httpCookie.toString())
-                // AT 저장
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenDto.getAccessToken())
-                .build();
+        response.setHeader(HttpHeaders.SET_COOKIE, httpCookie.toString());
+        response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + tokenDto.getAccessToken());
+
+        return Apiutils.success("로그인 성공");
     }
 
-    @PostMapping("/validate")
-    public ResponseEntity<?> validate(@RequestHeader("Authorization") String requestAccessToken) {
-        if (!authService.validate(requestAccessToken)) {
-            return ResponseEntity.status(HttpStatus.OK).build(); // 재발급 필요X
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // 재발급 필요
-        }
-    }
     // 토큰 재발급
     @PostMapping("/reissue")
     public ResponseEntity<?> reissue(@CookieValue(name = "refresh-token") String requestRefreshToken,
                                      @RequestHeader("Authorization") String requestAccessToken) {
-        AuthDto.TokenDto reissuedTokenDto = authService.reissue(requestAccessToken, requestRefreshToken);
+        TokenDto reissuedTokenDto = memberAuthenticationService.reissue(requestAccessToken, requestRefreshToken);
 
         if (reissuedTokenDto != null) { // 토큰 재발급 성공
             // RT 저장
@@ -95,7 +91,7 @@ public class AuthApiController {
     // 로그아웃
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@RequestHeader("Authorization") String requestAccessToken) {
-        authService.logout(requestAccessToken);
+        memberAuthenticationService.logout(requestAccessToken);
         ResponseCookie responseCookie = ResponseCookie.from("refresh-token", "")
                 .maxAge(0)
                 .path("/")

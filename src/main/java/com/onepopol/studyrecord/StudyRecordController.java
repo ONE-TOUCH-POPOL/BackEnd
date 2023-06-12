@@ -1,7 +1,7 @@
 package com.onepopol.studyrecord;
 
 import com.onepopol.config.ValidationException;
-import com.onepopol.member.security.UserDetailsImpl;
+import com.onepopol.member.security.MemberDetailsImpl;
 import com.onepopol.studyrecord.dto.StudyRecordCreate;
 import com.onepopol.studyrecord.dto.StudyRecordGetResponse;
 import com.onepopol.studyrecord.service.StudyRecordCrudService;
@@ -33,7 +33,7 @@ public class StudyRecordController {
             throw new ValidationException(fieldErrors);
         }
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        MemberDetailsImpl userDetails = (MemberDetailsImpl) authentication.getPrincipal();
         studyRecordCreate.setUserId(userDetails.getUserId());
         Long result = studyRecordCrudService.addStudyRecord(studyRecordCreate);
         return Apiutils.success("학습 기록 작성 성공");
@@ -49,7 +49,7 @@ public class StudyRecordController {
     @GetMapping("/all")
     public ApiResult<?> studyRecordGetAll() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        MemberDetailsImpl userDetails = (MemberDetailsImpl) authentication.getPrincipal();
         List<StudyRecordGetResponse> res = studyRecordCrudService.getStudyRecordByUserId(userDetails.getUserId());
         return Apiutils.success(res);
     }
