@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @Getter
@@ -22,6 +23,7 @@ public class StudyRecord extends BaseEntity {
 
     private String title;
 
+    @Lob
     private String content;
 
     private String category;
