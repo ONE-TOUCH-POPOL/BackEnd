@@ -112,9 +112,9 @@ public class JwtTokenProvider implements InitializingBean {
 
     public boolean validateRefreshToken(String refreshToken){
         try {
-            if (memberRedisService.getValues(refreshToken).equals("delete")) { // 회원 탈퇴했을 경우
-                return false;
-            }
+//            if (memberRedisService.getValues(refreshToken).equals("delete")) { // 회원 탈퇴했을 경우
+//                return false;
+//            }
             Jwts.parserBuilder()
                     .setSigningKey(signingKey)
                     .build()
