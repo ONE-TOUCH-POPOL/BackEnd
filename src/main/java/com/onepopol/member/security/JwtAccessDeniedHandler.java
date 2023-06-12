@@ -24,6 +24,7 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
                        HttpServletResponse response,
                        AccessDeniedException accessDeniedException) throws IOException {
         // 권한이 없는 경우
+        response.setCharacterEncoding("utf-8");
         response.setStatus(HttpStatus.OK.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
