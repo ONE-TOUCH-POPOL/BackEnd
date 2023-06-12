@@ -78,7 +78,6 @@ public class MemberController {
             return Apiutils.success("Access Token 재발급 성공");
         }catch(BaseException e){
             // Cookie 삭제 후 재로그인 유도
-            e.printStackTrace();
             ResponseCookie responseCookie = ResponseCookie.from("refresh-token", "")
                     .maxAge(0)
                     .path("/")
