@@ -91,7 +91,7 @@ class StudyRecordTest {
 
         // Then
         StudyRecord changeRes = studyRecordRepository.getReferenceById(studyRecordId);
-        Assertions.assertEquals(res.getStatus().getValue(), Status.INACTIVE.getValue());
+        Assertions.assertEquals(changeRes.getStatus().getValue(), Status.INACTIVE.getValue());
 
     }
 }
