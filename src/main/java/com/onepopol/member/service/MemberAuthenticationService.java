@@ -1,8 +1,10 @@
 package com.onepopol.member.service;
 
+import com.onepopol.config.BaseException;
 import com.onepopol.member.dto.MemberLoginRequest;
 import com.onepopol.member.dto.TokenDto;
 import com.onepopol.member.security.JwtTokenProvider;
+import com.onepopol.utils.ApiError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,20 +33,14 @@ public class MemberAuthenticationService {
     // 로그인: 인증 정보 저장 및 비어 토큰 발급
     @Transactional
     public TokenDto login(MemberLoginRequest memberLoginRequest) {
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(memberLoginRequest.getEmail(), memberLoginRequest.getPassword());
+            UsernamePasswordAuthenticationToken authenticationToken =
+                    new UsernamePasswordAuthenticationToken(memberLoginRequest.getEmail(), memberLoginRequest.getPassword());
 
-        Authentication authentication = authenticationManagerBuilder.getObject()
-                .authenticate(authenticationToken);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+            Authentication authentication = authenticationManagerBuilder.getObject()
+                    .authenticate(authenticationToken);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        return generateToken(SERVER, authentication.getName(), getAuthorities(authentication));
-    }
-
-    // AT가 만료일자만 초과한 유효한 토큰인지 검사
-    public boolean validate(String requestAccessTokenInHeader) {
-        String requestAccessToken = resolveToken(requestAccessTokenInHeader);
-        return jwtTokenProvider.validateAccessTokenOnlyExpired(requestAccessToken); // true = 재발급
+            return generateToken(SERVER, authentication.getName(), getAuthorities(authentication));
     }
 
     // 토큰 재발급: validate 메서드가 true 반환할 때만 사용 -> AT, RT 재발급
@@ -57,13 +53,15 @@ public class MemberAuthenticationService {
 
         String refreshTokenInRedis = memberRedisService.getValues("RT(" + SERVER + "):" + principal);
         if (refreshTokenInRedis == null) { // Redis에 저장되어 있는 RT가 없을 경우
-            return null; // -> 재로그인 요청
+//            return null; // -> 재로그인 요청
+            throw new BaseException(new ApiError("존재하지 않는 RT입니다.", 1002));
         }
 
         // 요청된 RT의 유효성 검사 & Redis에 저장되어 있는 RT와 같은지 비교
         if(!jwtTokenProvider.validateRefreshToken(requestRefreshToken) || !refreshTokenInRedis.equals(requestRefreshToken)) {
             memberRedisService.deleteValues("RT(" + SERVER + "):" + principal); // 탈취 가능성 -> 삭제
-            return null; // -> 재로그인 요청
+//            return null; // -> 재로그인 요청
+            throw new BaseException(new ApiError("RT가 유효하지 않습니다.", 1003));
         }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);

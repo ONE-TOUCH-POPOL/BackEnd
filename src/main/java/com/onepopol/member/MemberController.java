@@ -1,5 +1,6 @@
 package com.onepopol.member;
 
+import com.onepopol.config.BaseException;
 import com.onepopol.member.dto.MemberLoginRequest;
 import com.onepopol.member.dto.MemberSignupRequest;
 import com.onepopol.member.dto.TokenDto;
@@ -8,7 +9,9 @@ import com.onepopol.member.service.MemberManagementService;
 import com.onepopol.utils.ApiResult;
 import com.onepopol.utils.Apiutils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.*;
+import org.springframework.http.HttpCookie;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -57,49 +60,45 @@ public class MemberController {
 
     // 토큰 재발급
     @PostMapping("/reissue")
-    public ResponseEntity<?> reissue(@CookieValue(name = "refresh-token") String requestRefreshToken,
-                                     @RequestHeader("Authorization") String requestAccessToken) {
-        TokenDto reissuedTokenDto = memberAuthenticationService.reissue(requestAccessToken, requestRefreshToken);
+    public ApiResult<?> reissue(@CookieValue(name = "refresh-token") String requestRefreshToken,
+                                     @RequestHeader("Authorization") String requestAccessToken,
+                                    HttpServletResponse response) {
+        try{
+            TokenDto reissuedTokenDto = memberAuthenticationService.reissue(requestAccessToken, requestRefreshToken);
 
-        if (reissuedTokenDto != null) { // 토큰 재발급 성공
             // RT 저장
             ResponseCookie responseCookie = ResponseCookie.from("refresh-token", reissuedTokenDto.getRefreshToken())
                     .maxAge(COOKIE_EXPIRATION)
                     .httpOnly(true)
                     .secure(true)
                     .build();
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
-                    // AT 저장
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + reissuedTokenDto.getAccessToken())
-                    .build();
+            response.setHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
+            response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + reissuedTokenDto.getAccessToken());
 
-        } else { // Refresh Token 탈취 가능성
+            return Apiutils.success("Access Token 재발급 성공");
+        }catch(BaseException e){
             // Cookie 삭제 후 재로그인 유도
+            e.printStackTrace();
             ResponseCookie responseCookie = ResponseCookie.from("refresh-token", "")
                     .maxAge(0)
                     .path("/")
                     .build();
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
-                    .build();
+            response.setHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
+            throw new BaseException(e.getApiError());
         }
     }
 
     // 로그아웃
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@RequestHeader("Authorization") String requestAccessToken) {
+    public ApiResult<?> logout(@RequestHeader("Authorization") String requestAccessToken, HttpServletResponse response) {
         memberAuthenticationService.logout(requestAccessToken);
         ResponseCookie responseCookie = ResponseCookie.from("refresh-token", "")
                 .maxAge(0)
                 .path("/")
                 .build();
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
-                .build();
+        response.setHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
+
+        return Apiutils.success("로그아웃 성공");
     }
 }
