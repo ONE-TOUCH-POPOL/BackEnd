@@ -4,13 +4,17 @@ import com.onepopol.studyrecord.dto.StudyRecordCreate;
 import com.onepopol.studyrecord.repository.StudyRecordRepository;
 import com.onepopol.studyrecord.repository.entity.StudyRecord;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
@@ -30,6 +34,7 @@ class StudyRecordCrudServiceTest {
     }
 
     @Test
+    @DisplayName("학습기록 저장 정상 작동")
     void addStudyRecord() {
         // 테스트에 필요한 입력 데이터 설정
         StudyRecordCreate studyRecordCreate = new StudyRecordCreate();
@@ -57,6 +62,17 @@ class StudyRecordCrudServiceTest {
     }
 
     @Test
+    @DisplayName("4개의 데이터를 반환함")
     void getStudyRecordByUserId() {
+        List<StudyRecord> list = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            list.add(new StudyRecord());
+        }
+        Long userId = 1L;
+
+        when(studyRecordRepository.findByUserId(userId)).thenReturn(list);
+
+        assertEquals(studyRecordCrudService.getStudyRecordByUserId(userId).size(), list.size());
+
     }
 }
