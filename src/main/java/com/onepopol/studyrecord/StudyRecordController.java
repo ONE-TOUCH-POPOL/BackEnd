@@ -21,6 +21,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/study-record")
+@CrossOrigin
 public class StudyRecordController {
     private final StudyRecordCrudService studyRecordCrudService;
 

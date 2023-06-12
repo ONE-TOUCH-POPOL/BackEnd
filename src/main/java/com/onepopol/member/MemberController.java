@@ -21,6 +21,7 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
+@CrossOrigin
 public class MemberController {
 
     private final MemberAuthenticationService memberAuthenticationService;
