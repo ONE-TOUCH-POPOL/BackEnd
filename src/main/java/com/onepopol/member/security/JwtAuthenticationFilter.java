@@ -43,7 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
                 ObjectMapper objectMapper = new ObjectMapper();
-                String responseBody = objectMapper.writeValueAsString(Apiutils.error("token expire",1001)); // ApiResult 객체를 JSON 문자열로 변환
+                String responseBody = objectMapper.writeValueAsString(Apiutils.error("access token expire",1003)); // ApiResult 객체를 JSON 문자열로 변환
 
                 response.getWriter().write(responseBody);
                 response.getWriter().flush();
@@ -52,11 +52,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } catch (IncorrectClaimException e) { // 잘못된 토큰일 경우
             SecurityContextHolder.clearContext();
             log.debug("Invalid JWT token.");
-            response.sendError(403);
+
+            response.setStatus(HttpStatus.OK.value());
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            String responseBody = objectMapper.writeValueAsString(Apiutils.error("잘못된 Access Token 입니다.",1004));
+
+            response.getWriter().write(responseBody);
+            response.getWriter().flush();
         } catch (UsernameNotFoundException e) { // 회원을 찾을 수 없을 경우
             SecurityContextHolder.clearContext();
             log.debug("Can't find user.");
-            response.sendError(403);
+
+            response.setStatus(HttpStatus.OK.value());
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            String responseBody = objectMapper.writeValueAsString(Apiutils.error("사용자를 찾을 수 없습니다.",1005));
+
+            response.getWriter().write(responseBody);
+            response.getWriter().flush();
         }
 
         filterChain.doFilter(request, response);

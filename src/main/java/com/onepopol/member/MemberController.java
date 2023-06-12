@@ -90,14 +90,19 @@ public class MemberController {
     // 로그아웃
     @PostMapping("/logout")
     public ApiResult<?> logout(@RequestHeader("Authorization") String requestAccessToken, HttpServletResponse response) {
-        memberAuthenticationService.logout(requestAccessToken);
-        ResponseCookie responseCookie = ResponseCookie.from("refresh-token", "")
-                .maxAge(0)
-                .path("/")
-                .build();
+        try {
+            ResponseCookie responseCookie = ResponseCookie.from("refresh-token", "")
+                    .maxAge(0)
+                    .path("/")
+                    .build();
 
-        response.setHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
+            response.setHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
 
-        return Apiutils.success("로그아웃 성공");
+            memberAuthenticationService.logout(requestAccessToken);
+
+            return Apiutils.success("로그아웃 성공");
+        }catch (BaseException e){
+            throw new BaseException(e.getApiError());
+        }
     }
 }

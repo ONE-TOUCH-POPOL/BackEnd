@@ -51,15 +51,12 @@ public class MemberAuthenticationService {
         Authentication authentication = jwtTokenProvider.getAuthentication(requestAccessToken);
         String principal = getPrincipal(requestAccessToken);
 
-        String refreshTokenInRedis = memberRedisService.getValues("RT(" + SERVER + "):" + principal);
-        if (refreshTokenInRedis == null) { // Redis에 저장되어 있는 RT가 없을 경우
-            throw new BaseException(new ApiError("존재하지 않는 RT입니다.", 1002)); // 재로그인 요청
-        }
+        String refreshTokenInRedis = getRefreshTokenInRedis(principal); // Redis에 RT 저장 되어있는지 && 값 확인
 
         // 요청된 RT의 유효성 검사 & Redis에 저장되어 있는 RT와 같은지 비교
         if(!jwtTokenProvider.validateRefreshToken(requestRefreshToken) || !refreshTokenInRedis.equals(requestRefreshToken)) {
             memberRedisService.deleteValues("RT(" + SERVER + "):" + principal); // 탈취 가능성 -> 삭제
-            throw new BaseException(new ApiError("RT가 유효하지 않습니다.", 1003)); // 재로그인 요청
+            throw new BaseException(new ApiError("refresh token이 유효하지 않습니다.", 1006)); // 재로그인 요청
         }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -106,12 +103,20 @@ public class MemberAuthenticationService {
         return jwtTokenProvider.getAuthentication(requestAccessToken).getName();
     }
 
+    private String getRefreshTokenInRedis(String principal){
+        String refreshTokenInRedis = memberRedisService.getValues("RT(" + SERVER + "):" + principal);
+        if (refreshTokenInRedis == null) {
+            throw new BaseException(new ApiError("refresh token이 존재하지 않습니다.", 1007));
+        }
+        return refreshTokenInRedis;
+    }
+
     // "Bearer {AT}"에서 {AT} 추출
     private String resolveToken(String requestAccessTokenInHeader) {
-        if (requestAccessTokenInHeader != null && requestAccessTokenInHeader.startsWith("Bearer ")) {
-            return requestAccessTokenInHeader.substring(7);
+        if (requestAccessTokenInHeader == null || !requestAccessTokenInHeader.startsWith("Bearer ")) {
+            throw new BaseException(new ApiError("잘못된 Access Token 입니다.", 1008));
         }
-        return null;
+        return requestAccessTokenInHeader.substring(7);
     }
 
     // 로그아웃
@@ -121,10 +126,8 @@ public class MemberAuthenticationService {
         String principal = getPrincipal(requestAccessToken);
 
         // Redis에 저장되어 있는 RT 삭제
-        String refreshTokenInRedis = memberRedisService.getValues("RT(" + SERVER + "):" + principal);
-        if (refreshTokenInRedis != null) {
-            memberRedisService.deleteValues("RT(" + SERVER + "):" + principal);
-        }
+        getRefreshTokenInRedis(principal); // Redis에 RT가 저장되어있는지 확인
+        memberRedisService.deleteValues("RT(" + SERVER + "):" + principal);
 
         // Redis에 로그아웃 처리한 AT 저장
         long expiration = jwtTokenProvider.getTokenExpirationTime(requestAccessToken) - new Date().getTime();
