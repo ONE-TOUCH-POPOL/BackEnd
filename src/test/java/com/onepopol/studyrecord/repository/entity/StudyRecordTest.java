@@ -1,5 +1,6 @@
 package com.onepopol.studyrecord.repository.entity;
 
+import com.onepopol.constant.Status;
 import com.onepopol.studyrecord.repository.StudyRecordRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -39,6 +40,31 @@ class StudyRecordTest {
         // Then
         StudyRecord res = studyRecordRepository.getReferenceById(studyRecordId);
         Assertions.assertEquals(studyRecord, res);
+
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("학습기록 저장시 Status의 기본값은 Active")
+    public void testStudyRecordSaveDefaultStatusIsActive() {
+        // Given
+        String title = "테스트 제목";
+        String content = "테스트 내용";
+        LocalDate date = LocalDate.now();
+        Long userId = 1L;
+
+        StudyRecord studyRecord = new StudyRecord().builder()
+                .title(title)
+                .content(content)
+                .recordDate(date)
+                .userId(userId)
+                .build();
+        // When
+        Long studyRecordId = studyRecordRepository.save(studyRecord).getId();
+
+        // Then
+        StudyRecord res = studyRecordRepository.getReferenceById(studyRecordId);
+        Assertions.assertEquals(res.getStatus().getValue(), Status.ACTIVE.getValue());
 
     }
 }
