@@ -1,5 +1,6 @@
 package com.onepopol.studyrecord.repository.entity;
 
+import com.onepopol.constant.Status;
 import com.onepopol.utils.TimeStamped;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,12 +31,24 @@ public class StudyRecord extends TimeStamped {
 
     private Long userId;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", columnDefinition = "VARCHAR(20) DEFAULT 'ACTIVE'")
+    private Status status = Status.ACTIVE;
+
+
+    @Override
+    public void prePersist() {
+        super.prePersist();
+        this.status = Status.ACTIVE;
+    }
+
     @Builder
-    public StudyRecord(String title, String content, String category, LocalDate recordDate, Long userId) {
+    public StudyRecord(String title, String content, String category, LocalDate recordDate, Long userId, Status status) {
         this.title = title;
         this.content = content;
         this.category = category;
         this.recordDate = recordDate;
         this.userId = userId;
+        this.status = status;
     }
 }
