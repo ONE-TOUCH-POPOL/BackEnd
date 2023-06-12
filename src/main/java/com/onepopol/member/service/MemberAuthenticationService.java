@@ -18,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 import java.util.stream.Collectors;
 
+import static com.onepopol.member.error.MemberErrorCode.*;
+
 @Slf4j
 @Service
 @Transactional(readOnly = true)
@@ -54,19 +56,18 @@ public class MemberAuthenticationService {
         String refreshTokenInRedis = getRefreshTokenInRedis(principal); // Redis에 RT 저장 되어있는지 && 값 확인
 
         // 요청된 RT의 유효성 검사 & Redis에 저장되어 있는 RT와 같은지 비교
-        if(!jwtTokenProvider.validateRefreshToken(requestRefreshToken) || !refreshTokenInRedis.equals(requestRefreshToken)) {
-            memberRedisService.deleteValues("RT(" + SERVER + "):" + principal); // 탈취 가능성 -> 삭제
-            throw new BaseException(new ApiError("refresh token이 유효하지 않습니다.", 1006)); // 재로그인 요청
+        if (jwtTokenProvider.validateRefreshToken(requestRefreshToken) && refreshTokenInRedis.equals(requestRefreshToken)) {
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String authorities = getAuthorities(authentication);
+
+            // 토큰 재발급 및 Redis 업데이트
+            memberRedisService.deleteValues("RT(" + SERVER + "):" + principal); // 기존 RT 삭제
+            TokenDto tokenDto = jwtTokenProvider.createToken(principal, authorities);
+            saveRefreshToken(SERVER, principal, tokenDto.getRefreshToken());
+            return tokenDto;
         }
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String authorities = getAuthorities(authentication);
-
-        // 토큰 재발급 및 Redis 업데이트
-        memberRedisService.deleteValues("RT(" + SERVER + "):" + principal); // 기존 RT 삭제
-        TokenDto tokenDto = jwtTokenProvider.createToken(principal, authorities);
-        saveRefreshToken(SERVER, principal, tokenDto.getRefreshToken());
-        return tokenDto;
+        memberRedisService.deleteValues("RT(" + SERVER + "):" + principal); // 탈취 가능성 -> 삭제
+        throw new BaseException(new ApiError(INVALID_REFRESH_TOKEN.getMessage(), INVALID_REFRESH_TOKEN.getCode())); // 재로그인 요청
     }
 
     // 토큰 발급
@@ -106,17 +107,20 @@ public class MemberAuthenticationService {
     private String getRefreshTokenInRedis(String principal){
         String refreshTokenInRedis = memberRedisService.getValues("RT(" + SERVER + "):" + principal);
         if (refreshTokenInRedis == null) {
-            throw new BaseException(new ApiError("refresh token이 존재하지 않습니다.", 1007));
+            throw new BaseException(new ApiError(NON_EXISTENT_REFRESH_TOKEN.getMessage(), NON_EXISTENT_REFRESH_TOKEN.getCode()));
         }
         return refreshTokenInRedis;
     }
 
     // "Bearer {AT}"에서 {AT} 추출
     private String resolveToken(String requestAccessTokenInHeader) {
-        if (requestAccessTokenInHeader == null || !requestAccessTokenInHeader.startsWith("Bearer ")) {
-            throw new BaseException(new ApiError("잘못된 Access Token 입니다.", 1008));
+        if (requestAccessTokenInHeader == null) {
+            throw new BaseException(new ApiError(ACCESS_TOKEN_NOT_FOUND.getMessage(), ACCESS_TOKEN_NOT_FOUND.getCode()));
         }
-        return requestAccessTokenInHeader.substring(7);
+        if(requestAccessTokenInHeader.startsWith("Bearer ")){
+            return requestAccessTokenInHeader.substring(7);
+        }
+        throw new BaseException(new ApiError(INVALID_ACCESS_TOKEN.getMessage(), INVALID_ACCESS_TOKEN.getCode()));
     }
 
     // 로그아웃

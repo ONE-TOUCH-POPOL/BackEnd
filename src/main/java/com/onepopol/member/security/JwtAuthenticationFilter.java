@@ -18,6 +18,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static com.onepopol.member.error.MemberErrorCode.*;
+
 @Slf4j
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -43,7 +45,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
                 ObjectMapper objectMapper = new ObjectMapper();
-                String responseBody = objectMapper.writeValueAsString(Apiutils.error("access token expire",1003)); // ApiResult 객체를 JSON 문자열로 변환
+                String responseBody = objectMapper.writeValueAsString(Apiutils.error(ACCESS_TOKEN_EXPIRED.getMessage(),ACCESS_TOKEN_EXPIRED.getCode()));
 
                 response.getWriter().write(responseBody);
                 response.getWriter().flush();
@@ -57,7 +59,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            String responseBody = objectMapper.writeValueAsString(Apiutils.error("잘못된 Access Token 입니다.",1004));
+            String responseBody = objectMapper.writeValueAsString(Apiutils.error(INVALID_ACCESS_TOKEN.getMessage(),INVALID_ACCESS_TOKEN.getCode()));
 
             response.getWriter().write(responseBody);
             response.getWriter().flush();
@@ -69,7 +71,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            String responseBody = objectMapper.writeValueAsString(Apiutils.error("사용자를 찾을 수 없습니다.",1005));
+            String responseBody = objectMapper.writeValueAsString(Apiutils.error(USER_NOT_FOUND.getMessage(), USER_NOT_FOUND.getCode()));
 
             response.getWriter().write(responseBody);
             response.getWriter().flush();
