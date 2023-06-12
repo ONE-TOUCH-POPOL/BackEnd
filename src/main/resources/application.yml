@@ -1,15 +1,15 @@
 spring:
   redis:
-    host: localhost
-    port: 6379
+    host: ${HOME_HOST}
+    port: ${DB_REDIS_PORT}
   sql:
     init:
       mode: always
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/test_server?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
-    username: root
-    password: 1234
+    url: ${DB_URL}
+    username: ${DB_USER_NAME}
+    password: ${DB_USER_PASSWORD}
   jpa:
     open-in-view: true
     hibernate:
