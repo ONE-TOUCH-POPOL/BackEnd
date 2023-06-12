@@ -1,12 +1,13 @@
 package com.onepopol.studyrecord.repository.entity;
 
-import com.onepopol.utils.TimeStamped;
+import com.onepopol.utils.BaseEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @Getter
@@ -14,7 +15,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Entity
 @Table(name = "studyrecord")
-public class StudyRecord extends TimeStamped {
+public class StudyRecord extends BaseEntity {
     @Id
     @Column(name = "studyrecord_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,6 +23,7 @@ public class StudyRecord extends TimeStamped {
 
     private String title;
 
+    @Lob
     private String content;
 
     private String category;
@@ -29,6 +31,7 @@ public class StudyRecord extends TimeStamped {
     private LocalDate recordDate;
 
     private Long userId;
+
 
     @Builder
     public StudyRecord(String title, String content, String category, LocalDate recordDate, Long userId) {
