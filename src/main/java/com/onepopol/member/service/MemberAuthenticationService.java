@@ -53,15 +53,13 @@ public class MemberAuthenticationService {
 
         String refreshTokenInRedis = memberRedisService.getValues("RT(" + SERVER + "):" + principal);
         if (refreshTokenInRedis == null) { // Redis에 저장되어 있는 RT가 없을 경우
-//            return null; // -> 재로그인 요청
-            throw new BaseException(new ApiError("존재하지 않는 RT입니다.", 1002));
+            throw new BaseException(new ApiError("존재하지 않는 RT입니다.", 1002)); // 재로그인 요청
         }
 
         // 요청된 RT의 유효성 검사 & Redis에 저장되어 있는 RT와 같은지 비교
         if(!jwtTokenProvider.validateRefreshToken(requestRefreshToken) || !refreshTokenInRedis.equals(requestRefreshToken)) {
             memberRedisService.deleteValues("RT(" + SERVER + "):" + principal); // 탈취 가능성 -> 삭제
-//            return null; // -> 재로그인 요청
-            throw new BaseException(new ApiError("RT가 유효하지 않습니다.", 1003));
+            throw new BaseException(new ApiError("RT가 유효하지 않습니다.", 1003)); // 재로그인 요청
         }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -109,7 +107,7 @@ public class MemberAuthenticationService {
     }
 
     // "Bearer {AT}"에서 {AT} 추출
-    public String resolveToken(String requestAccessTokenInHeader) {
+    private String resolveToken(String requestAccessTokenInHeader) {
         if (requestAccessTokenInHeader != null && requestAccessTokenInHeader.startsWith("Bearer ")) {
             return requestAccessTokenInHeader.substring(7);
         }
