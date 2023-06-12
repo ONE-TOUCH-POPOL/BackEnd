@@ -6,6 +6,7 @@ on:
 
 jobs:
   deploy:
+    #테스트
     runs-on: ubuntu-latest
     steps:
       - name: 저장소 Checkout
