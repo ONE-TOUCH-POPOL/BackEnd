@@ -13,7 +13,9 @@ public enum MemberErrorCode {
     USER_NOT_FOUND(1005, "사용자를 찾을 수 없습니다."),
     INVALID_REFRESH_TOKEN(1006, "Refresh Token이 일치하지 않습니다."),
     NON_EXISTENT_REFRESH_TOKEN(1007, "존재하지 않는 Refresh Token 입니다."),
-    ACCESS_TOKEN_NOT_FOUND(1008, "Access Token이 존재하지 않습니다.");
+    ACCESS_TOKEN_NOT_FOUND(1008, "Access Token이 존재하지 않습니다."),
+
+    SERVER_ERROR(500, "서버 에러");
 
     private final int code;
     private final String message;
