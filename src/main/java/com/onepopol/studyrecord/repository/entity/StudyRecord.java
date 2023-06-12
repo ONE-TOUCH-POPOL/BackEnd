@@ -1,7 +1,6 @@
 package com.onepopol.studyrecord.repository.entity;
 
-import com.onepopol.constant.Status;
-import com.onepopol.utils.TimeStamped;
+import com.onepopol.utils.BaseEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +14,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Entity
 @Table(name = "studyrecord")
-public class StudyRecord extends TimeStamped {
+public class StudyRecord extends BaseEntity {
     @Id
     @Column(name = "studyrecord_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,24 +30,13 @@ public class StudyRecord extends TimeStamped {
 
     private Long userId;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", columnDefinition = "VARCHAR(20) DEFAULT 'ACTIVE'")
-    private Status status = Status.ACTIVE;
-
-
-    @Override
-    public void prePersist() {
-        super.prePersist();
-        this.status = Status.ACTIVE;
-    }
 
     @Builder
-    public StudyRecord(String title, String content, String category, LocalDate recordDate, Long userId, Status status) {
+    public StudyRecord(String title, String content, String category, LocalDate recordDate, Long userId) {
         this.title = title;
         this.content = content;
         this.category = category;
         this.recordDate = recordDate;
         this.userId = userId;
-        this.status = status;
     }
 }
