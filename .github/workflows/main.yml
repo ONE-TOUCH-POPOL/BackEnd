@@ -15,7 +15,7 @@ jobs:
       - name: Set Yaml # 환경변수 설정
         uses: microsoft/variable-substitution@v1
         with:
-          files: ./src/main/resources/application.yml
+          files: ./src/main/resources/application-dev.yml
         env:
           spring.redis.host : ${{secrets.HOME_HOST}}
           spring.redis.port : ${{secrets.DB_REDIS_PORT}}
