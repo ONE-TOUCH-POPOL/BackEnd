@@ -24,10 +24,7 @@ public class MemberManagementService {
     public void registerUser(MemberSignupRequest memberSignupRequest) {
 
         // 이메일 중복 체크
-        System.out.println(memberSignupRequest.getEmail());
-        if(memberRepository.findByEmail(memberSignupRequest.getEmail()).isPresent()){
-            throw new BaseException(new ApiError(EXISTS_EMAIL.getMessage(), EXISTS_EMAIL.getCode()));
-        }
+        checkDuplicateEmail(memberSignupRequest.getEmail());
 
         String encodedPassword = encoder.encode(memberSignupRequest.getPassword());
         MemberSignupRequest newMemberSignupRequest = MemberSignupRequest.encodePassword(memberSignupRequest, encodedPassword);
@@ -36,10 +33,9 @@ public class MemberManagementService {
         memberRepository.save(member);
     }
 
-    public boolean checkDuplicateEmail(String email){
+    public void checkDuplicateEmail(String email){
         if(memberRepository.findByEmail(email).isPresent()){
-            return false; // 중복 아님
+            throw new BaseException(new ApiError(EXISTS_EMAIL.getMessage(), EXISTS_EMAIL.getCode())); // 중복
         }
-        return true; // 중복
     }
 }
