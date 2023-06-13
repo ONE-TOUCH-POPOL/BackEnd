@@ -24,6 +24,8 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest request,
                          HttpServletResponse response,
                          AuthenticationException authException) throws IOException, ServletException {
+        log.error("invalid access");
+
         // 잘못된 접근
         response.setCharacterEncoding("utf-8");
         response.setStatus(HttpStatus.OK.value());

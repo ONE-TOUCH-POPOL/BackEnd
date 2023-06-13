@@ -23,6 +23,8 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
     public void handle(HttpServletRequest request,
                        HttpServletResponse response,
                        AccessDeniedException accessDeniedException) throws IOException {
+        log.error("no access rights");
+
         // 권한이 없는 경우
         response.setCharacterEncoding("utf-8");
         response.setStatus(HttpStatus.OK.value());
