@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -32,11 +33,12 @@ public class MemberController {
     // 회원가입
     @PostMapping("/signup")
     public ApiResult<?> signup(@RequestBody @Valid MemberSignupRequest memberSignupRequest) {
-        String encodedPassword = encoder.encode(memberSignupRequest.getPassword());
-        MemberSignupRequest newMemberSignupRequest = MemberSignupRequest.encodePassword(memberSignupRequest, encodedPassword);
-
-        memberManagementService.registerUser(newMemberSignupRequest);
-        return Apiutils.success("회원가입 성공");
+        try {
+            memberManagementService.registerUser(memberSignupRequest);
+            return Apiutils.success("회원가입 성공");
+        }catch (BaseException e) {
+            throw new BaseException(e.getApiError());
+        }
     }
 
     // 로그인 -> 토큰 발급
@@ -104,5 +106,13 @@ public class MemberController {
         }catch (BaseException e){
             throw new BaseException(e.getApiError());
         }
+    }
+
+    @PostMapping("/signup/checkDuplicateEmail")
+    public ApiResult<?> checkDuplicateEmail(@RequestBody Map<String, String> requestBody){
+        if(memberManagementService.checkDuplicateEmail(requestBody.get("email"))) {
+            return Apiutils.success("no"); // 중복 아님
+        }
+        return Apiutils.success("yes"); // 중복
     }
 }
