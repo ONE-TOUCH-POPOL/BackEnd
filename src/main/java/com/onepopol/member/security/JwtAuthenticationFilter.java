@@ -34,25 +34,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // Access Token 추출
         String accessToken = resolveToken(request);
-
         try { // 정상 토큰인지 검사
-            if (accessToken != null && jwtTokenProvider.validateAccessToken(accessToken)) {
-                Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                log.debug("Save authentication in SecurityContextHolder.");
-            }else if(accessToken != null && jwtTokenProvider.validateAccessTokenOnlyExpired(accessToken)){ // 유효하지만 만료된 경우
-                response.setCharacterEncoding("utf-8");
-                response.setStatus(HttpStatus.OK.value());
-                response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            if(accessToken!=null){
+                if(jwtTokenProvider.validateAccessToken(accessToken)){
+                    Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                    log.debug("Save authentication in SecurityContextHolder.");
+                }else if(jwtTokenProvider.validateAccessTokenOnlyExpired(accessToken)){
+                    if(request.getRequestURI().equals("/api/v1/reissue")) {
+                        log.debug("accept access token reissue request");
+                    }else{
+                        response.setCharacterEncoding("utf-8");
+                        response.setStatus(HttpStatus.OK.value());
+                        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
-                ObjectMapper objectMapper = new ObjectMapper();
-                String responseBody = objectMapper.writeValueAsString(Apiutils.error(ACCESS_TOKEN_EXPIRED.getMessage(),ACCESS_TOKEN_EXPIRED.getCode()));
+                        ObjectMapper objectMapper = new ObjectMapper();
+                        String responseBody = objectMapper.writeValueAsString(Apiutils.error(ACCESS_TOKEN_EXPIRED.getMessage(),ACCESS_TOKEN_EXPIRED.getCode()));
 
-                response.getWriter().write(responseBody);
-                response.getWriter().flush();
-                return;
+                        response.getWriter().write(responseBody);
+                        response.getWriter().flush();
+                        return;
+                    }
+                }
             }
-        } catch (IncorrectClaimException e) { // 잘못된 토큰일 경우
+        }catch (IncorrectClaimException e) { // 잘못된 토큰일 경우
             SecurityContextHolder.clearContext();
             log.debug("Invalid JWT token.");
 
