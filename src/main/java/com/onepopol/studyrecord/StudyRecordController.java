@@ -3,8 +3,10 @@ package com.onepopol.studyrecord;
 import com.onepopol.config.ValidationException;
 import com.onepopol.member.repository.entity.Member;
 import com.onepopol.member.security.MemberDetailsImpl;
+import com.onepopol.studyrecord.dto.MainCategoryCreate;
 import com.onepopol.studyrecord.dto.StudyRecordCreate;
 import com.onepopol.studyrecord.dto.StudyRecordGetResponse;
+import com.onepopol.studyrecord.service.StudyRecordCategoryService;
 import com.onepopol.studyrecord.service.StudyRecordCrudService;
 import com.onepopol.utils.ApiResult;
 import com.onepopol.utils.Apiutils;
@@ -25,6 +27,7 @@ import java.util.List;
 @CrossOrigin
 public class StudyRecordController {
     private final StudyRecordCrudService studyRecordCrudService;
+    private final StudyRecordCategoryService studyRecordCategoryService;
 
     @ResponseBody
     @PostMapping("/create")
@@ -56,6 +59,13 @@ public class StudyRecordController {
         MemberDetailsImpl userDetails = (MemberDetailsImpl) authentication.getPrincipal();
         List<StudyRecordGetResponse> res = studyRecordCrudService.getStudyRecordByUserId(userDetails.getUserId());
         return Apiutils.success(res);
+    }
+
+    @ResponseBody
+    @PostMapping("/main-category")
+    public ApiResult<?> mainCategoryAdd(@RequestBody MainCategoryCreate mainCategoryCreate, Principal principal) {
+        Long res = studyRecordCategoryService.addMainCategory(mainCategoryCreate);
+        return Apiutils.success("메인 카테고리 생성에 성공했습니다.");
     }
 
 }
