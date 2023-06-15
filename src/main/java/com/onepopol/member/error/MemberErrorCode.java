@@ -15,6 +15,8 @@ public enum MemberErrorCode {
     NON_EXISTENT_REFRESH_TOKEN(1007, "존재하지 않는 Refresh Token 입니다."),
     ACCESS_TOKEN_NOT_FOUND(1008, "Access Token이 존재하지 않습니다."),
 
+    EXISTS_EMAIL(1009, "존재하는 이메일입니다."),
+
     SERVER_ERROR(500, "서버 에러");
 
     private final int code;
