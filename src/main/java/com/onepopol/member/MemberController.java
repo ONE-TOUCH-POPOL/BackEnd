@@ -1,6 +1,7 @@
 package com.onepopol.member;
 
 import com.onepopol.config.BaseException;
+import com.onepopol.config.ValidationException;
 import com.onepopol.member.dto.MemberLoginRequest;
 import com.onepopol.member.dto.MemberSignupRequest;
 import com.onepopol.member.dto.TokenDto;
@@ -13,10 +14,14 @@ import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -32,17 +37,24 @@ public class MemberController {
 
     // 회원가입
     @PostMapping("/signup")
-    public ApiResult<?> signup(@RequestBody @Valid MemberSignupRequest memberSignupRequest) {
-        String encodedPassword = encoder.encode(memberSignupRequest.getPassword());
-        MemberSignupRequest newMemberSignupRequest = MemberSignupRequest.encodePassword(memberSignupRequest, encodedPassword);
+    public ApiResult<?> signup(@RequestBody @Valid MemberSignupRequest memberSignupRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            // 유효성 검사 실패 시 처리
+            List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+            throw new ValidationException(fieldErrors);
+        }
 
-        memberManagementService.registerUser(newMemberSignupRequest);
-        return Apiutils.success("회원가입 성공");
+        try {
+            memberManagementService.registerUser(memberSignupRequest);
+            return Apiutils.success("회원가입 성공");
+        }catch (BaseException e) {
+            throw new BaseException(e.getApiError());
+        }
     }
 
     // 로그인 -> 토큰 발급
     @PostMapping("/login")
-    public ApiResult<?> login(@RequestBody @Valid MemberLoginRequest memberLoginRequest, HttpServletResponse response) {
+    public ApiResult<?> login(@RequestBody @Valid MemberLoginRequest memberLoginRequest, BindingResult bindingResult, HttpServletResponse response) {
         // User 등록 및 Refresh Token 저장
         TokenDto tokenDto = memberAuthenticationService.login(memberLoginRequest);
 
@@ -103,6 +115,17 @@ public class MemberController {
 
             return Apiutils.success("로그아웃 성공");
         }catch (BaseException e){
+            throw new BaseException(e.getApiError());
+        }
+    }
+
+    @PostMapping("/signup/checkDuplicateEmail")
+    public ApiResult<?> checkDuplicateEmail(@RequestBody Map<String, String> requestBody){
+        try{
+            memberManagementService.checkDuplicateEmail(requestBody.get("email"));
+
+            return Apiutils.success("valid"); // 중복 아님
+        } catch (BaseException e){
             throw new BaseException(e.getApiError());
         }
     }
