@@ -1,5 +1,6 @@
 package com.onepopol.studyrecord.dto;
 
+import com.onepopol.studyrecord.repository.entity.StudyRecord;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,12 +24,13 @@ public class StudyRecordGetResponse {
 
     private LocalDate recordDate;
 
-    public StudyRecordGetResponse(Long id, String title, String content, String category, LocalDate recordDate, Long memberId) {
-        this.id = id;
-        this.title = title;
-        this.content = content;
-        this.memberId = memberId;
-        this.category = category;
-        this.recordDate = recordDate;
+    public StudyRecordGetResponse(StudyRecord studyRecord) {
+        this.id = studyRecord.getId();
+        this.title = studyRecord.getTitle();
+        this.content = studyRecord.getContent();
+        this.memberId = studyRecord.getMember().getId();
+        this.category = studyRecord.getCategory();
+        this.recordDate = studyRecord.getRecordDate();
     }
+
 }

@@ -2,7 +2,6 @@ package com.onepopol.studyrecord.service;
 
 import com.onepopol.member.repository.entity.Member;
 import com.onepopol.studyrecord.dto.StudyRecordCreate;
-import com.onepopol.studyrecord.dto.StudyRecordGetResponse;
 import com.onepopol.studyrecord.repository.StudyRecordRepository;
 import com.onepopol.studyrecord.repository.entity.StudyRecord;
 import org.junit.jupiter.api.BeforeEach;
@@ -71,15 +70,15 @@ class StudyRecordCrudServiceTest {
     void getStudyRecordByUserId() {
         List<StudyRecord> list = new ArrayList<>();
         for (int i = 0; i < 4; i++) {
-            list.add(new StudyRecord());
+            StudyRecord studyRecord = new StudyRecord();
+            Member member = new Member();
+            member.setId((i + 1L));
+            studyRecord.setMember(member);
+            list.add(studyRecord);
         }
         Long userId = 1L;
-        List<StudyRecordGetResponse> responseList = new ArrayList<>();
-        for (int i = 0; i < 4; i++) {
-            responseList.add(new StudyRecordGetResponse());
-        }
 
-        when(studyRecordRepository.findAllWithMemberId(userId)).thenReturn(responseList);
+        when(studyRecordRepository.findByMember_Id(userId)).thenReturn(list);
 
         assertEquals(studyRecordCrudService.getStudyRecordByUserId(userId).size(), list.size());
 

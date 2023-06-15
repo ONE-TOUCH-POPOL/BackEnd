@@ -30,7 +30,7 @@ public class StudyRecord extends BaseEntity {
 
     private LocalDate recordDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "member_id")
     private Member member;
 
