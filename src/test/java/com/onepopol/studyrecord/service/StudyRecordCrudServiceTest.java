@@ -1,6 +1,8 @@
 package com.onepopol.studyrecord.service;
 
+import com.onepopol.member.repository.entity.Member;
 import com.onepopol.studyrecord.dto.StudyRecordCreate;
+import com.onepopol.studyrecord.dto.StudyRecordGetResponse;
 import com.onepopol.studyrecord.repository.StudyRecordRepository;
 import com.onepopol.studyrecord.repository.entity.StudyRecord;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,7 +12,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -43,11 +44,15 @@ class StudyRecordCrudServiceTest {
         LocalDate date = LocalDate.now();
         Long userId = 1L;
 
+        Member member = new Member().builder()
+                .id(userId)
+                .build();
+
         StudyRecord studyRecord = new StudyRecord().builder()
                 .title(title)
                 .content(content)
                 .recordDate(date)
-                .userId(userId)
+                .member(member)
                 .build();
 
         StudyRecord savedStudyRecord = new StudyRecord();
@@ -69,8 +74,12 @@ class StudyRecordCrudServiceTest {
             list.add(new StudyRecord());
         }
         Long userId = 1L;
+        List<StudyRecordGetResponse> responseList = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            responseList.add(new StudyRecordGetResponse());
+        }
 
-        when(studyRecordRepository.findByUserId(userId)).thenReturn(list);
+        when(studyRecordRepository.findAllWithMemberId(userId)).thenReturn(responseList);
 
         assertEquals(studyRecordCrudService.getStudyRecordByUserId(userId).size(), list.size());
 

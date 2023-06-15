@@ -1,5 +1,6 @@
 package com.onepopol.studyrecord.dto;
 
+import com.onepopol.member.repository.entity.Member;
 import com.onepopol.studyrecord.repository.entity.StudyRecord;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -21,7 +22,7 @@ public class StudyRecordCreate {
 
     private String category;
 
-    private Long userId;
+    private Member member;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate recordDate;
@@ -31,8 +32,7 @@ public class StudyRecordCreate {
                 .title(title)
                 .content(content)
                 .category(category)
-                .recordDate(recordDate)
-                .userId(userId)
+                .member(member)
                 .build();
     }
 }

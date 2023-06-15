@@ -1,5 +1,6 @@
 package com.onepopol.studyrecord.repository.entity;
 
+import com.onepopol.member.repository.entity.Member;
 import com.onepopol.utils.BaseEntity;
 import lombok.Builder;
 import lombok.Getter;
@@ -7,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @Getter
@@ -30,15 +30,17 @@ public class StudyRecord extends BaseEntity {
 
     private LocalDate recordDate;
 
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
 
 
     @Builder
-    public StudyRecord(String title, String content, String category, LocalDate recordDate, Long userId) {
+    public StudyRecord(String title, String content, String category, LocalDate recordDate, Member member) {
         this.title = title;
         this.content = content;
         this.category = category;
         this.recordDate = recordDate;
-        this.userId = userId;
+        this.member = member;
     }
 }

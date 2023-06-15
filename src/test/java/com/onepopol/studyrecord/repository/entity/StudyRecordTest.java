@@ -1,12 +1,15 @@
 package com.onepopol.studyrecord.repository.entity;
 
 import com.onepopol.constant.Status;
+import com.onepopol.member.repository.MemberRepository;
+import com.onepopol.member.repository.entity.Member;
 import com.onepopol.studyrecord.repository.StudyRecordRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.event.annotation.BeforeTestClass;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -15,6 +18,18 @@ import java.time.LocalDate;
 class StudyRecordTest {
     @Autowired
     private StudyRecordRepository studyRecordRepository;
+    @Autowired
+    private MemberRepository memberRepository;
+    private final static Long USER_ID = 1L;
+    private static Member member;
+
+    @BeforeTestClass
+    public static void onlyOnce(@Autowired MemberRepository memberRepository) {
+        member = new Member().builder()
+                .id(USER_ID)
+                .build();
+        memberRepository.save(member);
+    }
 
     @Test
     @Transactional
@@ -24,13 +39,11 @@ class StudyRecordTest {
         String title = "테스트 제목";
         String content = "테스트 내용";
         LocalDate date = LocalDate.now();
-        Long userId = 1L;
 
         StudyRecord studyRecord = new StudyRecord().builder()
                 .title(title)
                 .content(content)
                 .recordDate(date)
-                .userId(userId)
                 .build();
 
         // When
@@ -51,13 +64,12 @@ class StudyRecordTest {
         String title = "테스트 제목";
         String content = "테스트 내용";
         LocalDate date = LocalDate.now();
-        Long userId = 1L;
 
         StudyRecord studyRecord = new StudyRecord().builder()
                 .title(title)
                 .content(content)
                 .recordDate(date)
-                .userId(userId)
+                .member(member)
                 .build();
         // When
         Long studyRecordId = studyRecordRepository.save(studyRecord).getId();
@@ -76,13 +88,12 @@ class StudyRecordTest {
         String title = "테스트 제목";
         String content = "테스트 내용";
         LocalDate date = LocalDate.now();
-        Long userId = 1L;
 
         StudyRecord studyRecord = new StudyRecord().builder()
                 .title(title)
                 .content(content)
                 .recordDate(date)
-                .userId(userId)
+                .member(member)
                 .build();
         // When
         Long studyRecordId = studyRecordRepository.save(studyRecord).getId();
