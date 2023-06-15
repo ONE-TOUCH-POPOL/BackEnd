@@ -2,16 +2,15 @@ package com.onepopol.member.repository.entity;
 
 import com.onepopol.member.domain.Role;
 import com.onepopol.member.dto.MemberSignupRequest;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
 
 @Entity(name = "member")
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Setter
+@NoArgsConstructor()
 public class Member {
 
     @Id
@@ -34,6 +33,15 @@ public class Member {
         member.role = Role.USER;
 
         return member;
+    }
+
+    @Builder
+    public Member(Long id,String email,String password,Role role){
+        this.id = id;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+
     }
 }
 

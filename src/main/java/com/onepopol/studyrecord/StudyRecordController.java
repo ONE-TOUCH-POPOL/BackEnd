@@ -1,6 +1,7 @@
 package com.onepopol.studyrecord;
 
 import com.onepopol.config.ValidationException;
+import com.onepopol.member.repository.entity.Member;
 import com.onepopol.member.security.MemberDetailsImpl;
 import com.onepopol.studyrecord.dto.StudyRecordCreate;
 import com.onepopol.studyrecord.dto.StudyRecordGetResponse;
@@ -35,7 +36,9 @@ public class StudyRecordController {
         }
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         MemberDetailsImpl userDetails = (MemberDetailsImpl) authentication.getPrincipal();
-        studyRecordCreate.setUserId(userDetails.getUserId());
+        Member member = new Member().builder()
+                .id(userDetails.getUserId())
+                .build();
         Long result = studyRecordCrudService.addStudyRecord(studyRecordCreate);
         return Apiutils.success("학습 기록 작성 성공");
     }
