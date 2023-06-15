@@ -4,13 +4,13 @@ import com.onepopol.member.repository.entity.Member;
 import com.onepopol.studyrecord.dto.StudyRecordCreate;
 import com.onepopol.studyrecord.repository.StudyRecordRepository;
 import com.onepopol.studyrecord.repository.entity.StudyRecord;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -19,19 +19,15 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class StudyRecordCrudServiceTest {
 
     @Mock
     private StudyRecordRepository studyRecordRepository;
 
+    @InjectMocks
     private StudyRecordCrudService studyRecordCrudService;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        studyRecordCrudService = new StudyRecordCrudService(studyRecordRepository);
-    }
+    
 
     @Test
     @DisplayName("학습기록 저장 정상 작동")
