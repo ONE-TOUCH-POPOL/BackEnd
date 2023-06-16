@@ -3,9 +3,7 @@ package com.onepopol.studyrecord;
 import com.onepopol.config.ValidationException;
 import com.onepopol.member.repository.entity.Member;
 import com.onepopol.member.security.MemberDetailsImpl;
-import com.onepopol.studyrecord.dto.MainCategoryCreate;
-import com.onepopol.studyrecord.dto.StudyRecordCreate;
-import com.onepopol.studyrecord.dto.StudyRecordGetResponse;
+import com.onepopol.studyrecord.dto.*;
 import com.onepopol.studyrecord.service.StudyRecordCategoryService;
 import com.onepopol.studyrecord.service.StudyRecordCrudService;
 import com.onepopol.utils.ApiResult;
@@ -63,9 +61,23 @@ public class StudyRecordController {
 
     @ResponseBody
     @PostMapping("/main-category")
-    public ApiResult<?> mainCategoryAdd(@RequestBody MainCategoryCreate mainCategoryCreate, Principal principal) {
+    public ApiResult<?> mainCategoryAdd(@Valid @RequestBody MainCategoryCreate mainCategoryCreate, Principal principal) {
         Long res = studyRecordCategoryService.addMainCategory(mainCategoryCreate);
         return Apiutils.success("메인 카테고리 생성에 성공했습니다.");
+    }
+
+    @ResponseBody
+    @PostMapping("/sub-category")
+    public ApiResult<?> subCategoryAdd(@Valid @RequestBody SubCategoryCreate subCategoryCreate, Principal principal) {
+        Long res = studyRecordCategoryService.addSubCategory(subCategoryCreate);
+        return Apiutils.success("서브 카테고리 생성에 성공했습니다.");
+    }
+
+    @ResponseBody
+    @GetMapping("/categorys")
+    public ApiResult<?> categoryGetAll() {
+        List<CategoryAllResponse> categoryAllResponses = studyRecordCategoryService.getCategoryAll();
+        return Apiutils.success(categoryAllResponses);
     }
 
 }

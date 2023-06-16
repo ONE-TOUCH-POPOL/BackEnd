@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -22,7 +23,12 @@ public class MainCategory {
     private String code_name;
 
     @OneToMany(mappedBy = "mainCategory", cascade = CascadeType.ALL)
-    private List<SubCategory> subCategory;
+    private List<SubCategory> subCategory = new ArrayList<>();
+
+    public void addSubCategory(SubCategory addSubCategory) {
+        subCategory.add(addSubCategory);
+        addSubCategory.setMainCategory(this);
+    }
 
     @Builder
     public MainCategory(String code_name) {
