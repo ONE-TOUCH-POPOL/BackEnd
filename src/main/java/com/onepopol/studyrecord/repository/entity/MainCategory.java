@@ -24,7 +24,7 @@ public class MainCategory {
 
     @OneToMany(mappedBy = "mainCategory", cascade = CascadeType.ALL)
     private List<SubCategory> subCategory = new ArrayList<>();
-
+    
     public void addSubCategory(SubCategory addSubCategory) {
         subCategory.add(addSubCategory);
         addSubCategory.setMainCategory(this);

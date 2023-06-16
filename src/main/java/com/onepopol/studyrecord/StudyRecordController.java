@@ -62,22 +62,22 @@ public class StudyRecordController {
     @ResponseBody
     @PostMapping("/main-category")
     public ApiResult<?> mainCategoryAdd(@Valid @RequestBody MainCategoryCreate mainCategoryCreate, Principal principal) {
-        Long res = studyRecordCategoryService.addMainCategory(mainCategoryCreate);
+        studyRecordCategoryService.addMainCategory(mainCategoryCreate);
         return Apiutils.success("메인 카테고리 생성에 성공했습니다.");
     }
 
     @ResponseBody
     @PostMapping("/sub-category")
     public ApiResult<?> subCategoryAdd(@Valid @RequestBody SubCategoryCreate subCategoryCreate, Principal principal) {
-        Long res = studyRecordCategoryService.addSubCategory(subCategoryCreate);
+        studyRecordCategoryService.addSubCategory(subCategoryCreate);
         return Apiutils.success("서브 카테고리 생성에 성공했습니다.");
     }
 
     @ResponseBody
-    @GetMapping("/categorys")
+    @GetMapping("/categories")
     public ApiResult<?> categoryGetAll() {
-        List<CategoryAllResponse> categoryAllResponses = studyRecordCategoryService.getCategoryAll();
-        return Apiutils.success(categoryAllResponses);
+        List<MainCategoryResponse> mainCategoryResponses = studyRecordCategoryService.getCategoryAll();
+        return Apiutils.success(mainCategoryResponses);
     }
 
 }

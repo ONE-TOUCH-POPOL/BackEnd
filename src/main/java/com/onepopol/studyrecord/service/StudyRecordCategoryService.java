@@ -1,8 +1,8 @@
 package com.onepopol.studyrecord.service;
 
 import com.onepopol.config.BaseException;
-import com.onepopol.studyrecord.dto.CategoryAllResponse;
 import com.onepopol.studyrecord.dto.MainCategoryCreate;
+import com.onepopol.studyrecord.dto.MainCategoryResponse;
 import com.onepopol.studyrecord.dto.SubCategoryCreate;
 import com.onepopol.studyrecord.repository.MainCategoryRepository;
 import com.onepopol.studyrecord.repository.SubCatergoryRepository;
@@ -26,24 +26,22 @@ public class StudyRecordCategoryService {
     @PersistenceContext
     private EntityManager em;
 
-    public Long addMainCategory(MainCategoryCreate mainCategoryCreate) {
-        return mainCategoryRepository.save(mainCategoryCreate.toEntity()).getId();
+    public void addMainCategory(MainCategoryCreate mainCategoryCreate) {
+        mainCategoryRepository.save(mainCategoryCreate.toEntity());
     }
 
-    public List<CategoryAllResponse> getCategoryAll() {
+    public List<MainCategoryResponse> getCategoryAll() {
         List<MainCategory> mainCategories = mainCategoryRepository.findAll();
         return mainCategories.stream()
-                .map(CategoryAllResponse::new)
+                .map(MainCategoryResponse::new)
                 .collect(Collectors.toList());
     }
 
-    public Long addSubCategory(SubCategoryCreate subCategoryCreate) {
+    public void addSubCategory(SubCategoryCreate subCategoryCreate) {
         MainCategory mainCategory = em.find(MainCategory.class, subCategoryCreate.getMainCode());
-//        MainCategory mainCategory = mainCategoryRepository.getReferenceById(subCategoryCreate.getMainCode());
         if (mainCategory == null) {
             throw new BaseException(new ApiError("메인 카테고리가 없습니다.", 2000));
         }
         mainCategory.addSubCategory(subCategoryCreate.toEntity());
-        return 1L;
     }
 }
