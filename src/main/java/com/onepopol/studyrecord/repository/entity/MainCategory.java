@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Getter
 @Setter
@@ -19,6 +20,9 @@ public class MainCategory {
     private Long id;
 
     private String code_name;
+
+    @OneToMany(mappedBy = "mainCategory", cascade = CascadeType.ALL)
+    private List<SubCategory> subCategory;
 
     @Builder
     public MainCategory(String code_name) {
