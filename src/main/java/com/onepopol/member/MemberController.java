@@ -47,7 +47,7 @@ public class MemberController {
         try {
             memberManagementService.registerUser(memberSignupRequest);
             return Apiutils.success("회원가입 성공");
-        }catch (BaseException e) {
+        } catch (BaseException e) {
             throw new BaseException(e.getApiError());
         }
     }
@@ -74,9 +74,9 @@ public class MemberController {
     // 토큰 재발급
     @PostMapping("/reissue")
     public ApiResult<?> reissue(@CookieValue(name = "refresh-token") String requestRefreshToken,
-                                     @RequestHeader("Authorization") String requestAccessToken,
-                                    HttpServletResponse response) {
-        try{
+                                @RequestHeader("Authorization") String requestAccessToken,
+                                HttpServletResponse response) {
+        try {
             TokenDto reissuedTokenDto = memberAuthenticationService.reissue(requestAccessToken, requestRefreshToken);
 
             // RT 저장
@@ -84,12 +84,13 @@ public class MemberController {
                     .maxAge(COOKIE_EXPIRATION)
                     .httpOnly(true)
                     .secure(true)
+                    .path("/")
                     .build();
             response.setHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
             response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + reissuedTokenDto.getAccessToken());
 
             return Apiutils.success("Access Token 재발급 성공");
-        }catch(BaseException e){
+        } catch (BaseException e) {
             // Cookie 삭제 후 재로그인 유도
             ResponseCookie responseCookie = ResponseCookie.from("refresh-token", "")
                     .maxAge(0)
@@ -98,6 +99,12 @@ public class MemberController {
             response.setHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
             throw new BaseException(e.getApiError());
         }
+    }
+
+    @PostMapping("/test")
+    public ApiResult<?> test(@CookieValue(name = "refresh-token") String requestRefreshToken) {
+        System.out.println(requestRefreshToken);
+        return Apiutils.success("Access Token 재발급 성공");
     }
 
     // 로그아웃
@@ -114,18 +121,18 @@ public class MemberController {
             memberAuthenticationService.logout(requestAccessToken);
 
             return Apiutils.success("로그아웃 성공");
-        }catch (BaseException e){
+        } catch (BaseException e) {
             throw new BaseException(e.getApiError());
         }
     }
 
     @PostMapping("/signup/checkDuplicateEmail")
-    public ApiResult<?> checkDuplicateEmail(@RequestBody Map<String, String> requestBody){
-        try{
+    public ApiResult<?> checkDuplicateEmail(@RequestBody Map<String, String> requestBody) {
+        try {
             memberManagementService.checkDuplicateEmail(requestBody.get("email"));
 
             return Apiutils.success("valid"); // 중복 아님
-        } catch (BaseException e){
+        } catch (BaseException e) {
             throw new BaseException(e.getApiError());
         }
     }
