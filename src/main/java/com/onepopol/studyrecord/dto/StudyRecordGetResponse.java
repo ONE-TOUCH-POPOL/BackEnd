@@ -14,6 +14,7 @@ import java.time.LocalDate;
 @ToString
 public class StudyRecordGetResponse {
     private Long id;
+
     private String title;
 
     private String content;

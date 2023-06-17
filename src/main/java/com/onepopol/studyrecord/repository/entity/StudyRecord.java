@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -34,6 +35,13 @@ public class StudyRecord extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @ManyToOne
+    @JoinColumn(name = "sub_code")
+    private SubCategory subCategory;
+
+    @OneToMany
+    @JoinColumn(name = "studyrecord_id")
+    private List<Badge> badges;
 
     @Builder
     public StudyRecord(String title, String content, String category, LocalDate recordDate, Member member) {

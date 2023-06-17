@@ -4,6 +4,7 @@ import com.onepopol.config.ValidationException;
 import com.onepopol.member.repository.entity.Member;
 import com.onepopol.member.security.MemberDetailsImpl;
 import com.onepopol.studyrecord.dto.*;
+import com.onepopol.studyrecord.service.StudyRecordBadgeService;
 import com.onepopol.studyrecord.service.StudyRecordCategoryService;
 import com.onepopol.studyrecord.service.StudyRecordCrudService;
 import com.onepopol.utils.ApiResult;
@@ -26,6 +27,7 @@ import java.util.List;
 public class StudyRecordController {
     private final StudyRecordCrudService studyRecordCrudService;
     private final StudyRecordCategoryService studyRecordCategoryService;
+    private final StudyRecordBadgeService studyRecordBadgeService;
 
     @ResponseBody
     @PostMapping("/create")
@@ -78,6 +80,18 @@ public class StudyRecordController {
     public ApiResult<?> categoryGetAll() {
         List<MainCategoryResponse> mainCategoryResponses = studyRecordCategoryService.getCategoryAll();
         return Apiutils.success(mainCategoryResponses);
+    }
+
+    @ResponseBody
+    @PostMapping("/badges")
+    public ApiResult<?> badgeAdd(@Valid @RequestBody BadgeCategoryCreate badgeCategoryCreate, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            // 유효성 검사 실패 시 처리
+            List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+            throw new ValidationException(fieldErrors);
+        }
+        studyRecordBadgeService.addBadgeCategory(badgeCategoryCreate);
+        return Apiutils.success("뱃지 생성에 성공했습니다.");
     }
 
 }
