@@ -1,9 +1,4 @@
 spring:
-  servlet:
-    # CORS 이슈때문에 일단 풀어놔야함.. 근데 보안상 이슈가 없는지는 모르겠음...
-    cookie:
-      same-site: None
-      secure: true
   redis:
     host: ${HOME_HOST}
     port: ${DB_REDIS_PORT}
