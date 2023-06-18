@@ -41,6 +41,10 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'
 	testImplementation 'org.springframework.security:spring-security-test'
+
+	// tess4j
+	implementation 'net.sourceforge.tess4j:tess4j:5.7.0'
+
 }
 
 tasks.named('test') {
