@@ -64,7 +64,6 @@ public class MemberController {
                 .path("/")
                 .httpOnly(true)
                 .secure(true)
-                .domain("localhost")
                 .sameSite("None")
                 .build();
 
@@ -87,9 +86,8 @@ public class MemberController {
                     .maxAge(COOKIE_EXPIRATION)
                     .path("/")
                     .httpOnly(true)
-                    .secure(false)
+                    .secure(true)
                     .sameSite("None")
-                    .domain("localhost")
                     .build();
             System.out.println(responseCookie.toString());
             response.setHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
