@@ -70,7 +70,7 @@ public class MemberController {
         response.setHeader(HttpHeaders.SET_COOKIE, httpCookie.toString());
         response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + tokenDto.getAccessToken());
 
-        return Apiutils.success("로그인 성공");
+        return Apiutils.success(tokenDto.getRefreshToken());
     }
 
     // 토큰 재발급
@@ -93,7 +93,7 @@ public class MemberController {
             response.setHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
             response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + reissuedTokenDto.getAccessToken());
 
-            return Apiutils.success("Access Token 재발급 성공");
+            return Apiutils.success(reissuedTokenDto);
         } catch (BaseException e) {
             // Cookie 삭제 후 재로그인 유도
             ResponseCookie responseCookie = ResponseCookie.from("refresh-token", "")
