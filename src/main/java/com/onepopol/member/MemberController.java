@@ -62,9 +62,9 @@ public class MemberController {
         HttpCookie httpCookie = ResponseCookie.from("refresh-token", tokenDto.getRefreshToken())
                 .maxAge(COOKIE_EXPIRATION)
                 .path("/")
-                .httpOnly(true)
-                .secure(true)
-                .sameSite("None")
+                .httpOnly(false)
+                .secure(false)
+//                .sameSite("None")
                 .build();
 
         response.setHeader(HttpHeaders.SET_COOKIE, httpCookie.toString());
@@ -85,9 +85,9 @@ public class MemberController {
             ResponseCookie responseCookie = ResponseCookie.from("refresh-token", reissuedTokenDto.getRefreshToken())
                     .maxAge(COOKIE_EXPIRATION)
                     .path("/")
-                    .httpOnly(true)
-                    .secure(true)
-                    .sameSite("None")
+                    .httpOnly(false)
+                    .secure(false)
+//                .sameSite("None")
                     .build();
             System.out.println(responseCookie.toString());
             response.setHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
