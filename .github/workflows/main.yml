@@ -46,5 +46,6 @@ jobs:
           script: |
             docker stop one-touch-popol-dev
             docker rm one-touch-popol-dev 
+            docker rmi slbin/one-touch-popol-dev:latest
             docker pull slbin/one-touch-popol-dev
             docker run -d -p ${{ secrets.SPRING_PORT }}:${{ secrets.SPRING_PORT }} --name one-touch-popol-dev ${{ secrets.HOME_USERNAME }}/one-touch-popol-dev
