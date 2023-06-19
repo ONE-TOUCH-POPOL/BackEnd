@@ -75,10 +75,13 @@ public class MemberController {
 
     // 토큰 재발급
     @PostMapping("/reissue")
-    public ApiResult<?> reissue(@CookieValue(name = "refresh-token") String requestRefreshToken,
+    public ApiResult<?> reissue(@RequestBody Map<String, String> refreshToken,
                                 @RequestHeader("Authorization") String requestAccessToken,
                                 HttpServletResponse response) {
         try {
+            String requestRefreshToken = refreshToken.get("refresh-token");
+            System.out.println(requestRefreshToken);
+            System.out.println(requestAccessToken);
             TokenDto reissuedTokenDto = memberAuthenticationService.reissue(requestAccessToken, requestRefreshToken);
 
             // RT 저장
