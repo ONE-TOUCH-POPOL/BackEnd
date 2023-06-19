@@ -42,7 +42,8 @@ public class StudyRecordController {
         Member member = new Member().builder()
                 .id(userDetails.getUserId())
                 .build();
-        Long result = studyRecordCrudService.addStudyRecord(studyRecordCreate);
+        studyRecordCreate.setMember(member);
+        studyRecordCrudService.addStudyRecord(studyRecordCreate);
         return Apiutils.success("학습 기록 작성 성공");
     }
 

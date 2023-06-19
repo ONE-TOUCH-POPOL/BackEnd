@@ -7,31 +7,51 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString
 public class StudyRecordGetResponse {
-    private Long id;
 
-    private String title;
+    private Long mainCode;
+    private String mainCodeName;
+    private List<SubCategories> subCategories = new ArrayList<>();
 
-    private String content;
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @ToString
+    public static class SubCategories {
+        private Long subCode;
+        private String subCodeName;
+        List<StudyRecordDetail> studyRecordDeatilList = new ArrayList<>();
+    }
 
-    private String category;
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @ToString
+    public static class StudyRecordDetail {
+        private Long id;
 
-    private Long memberId;
+        private String title;
 
-    private LocalDate recordDate;
+        private String content;
 
-    public StudyRecordGetResponse(StudyRecord studyRecord) {
-        this.id = studyRecord.getId();
-        this.title = studyRecord.getTitle();
-        this.content = studyRecord.getContent();
-        this.memberId = studyRecord.getMember().getId();
-        this.category = studyRecord.getCategory();
-        this.recordDate = studyRecord.getRecordDate();
+        private Long memberId;
+
+        private LocalDate recordDate;
+
+        public StudyRecordDetail(StudyRecord studyRecord) {
+            this.id = studyRecord.getId();
+            this.title = studyRecord.getTitle();
+            this.content = studyRecord.getContent();
+            this.memberId = studyRecord.getMember().getId();
+            this.recordDate = studyRecord.getRecordDate();
+        }
     }
 
 }

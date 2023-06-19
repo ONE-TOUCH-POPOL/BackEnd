@@ -1,7 +1,7 @@
 package com.onepopol.studyrecord.service;
 
 import com.onepopol.studyrecord.repository.MainCategoryRepository;
-import com.onepopol.studyrecord.repository.SubCatergoryRepository;
+import com.onepopol.studyrecord.repository.SubCategoryRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +16,7 @@ class StudyRecordCategoryServiceTest {
     private MainCategoryRepository mainCategoryRepository;
 
     @Mock
-    private SubCatergoryRepository subCatergoryRepository;
+    private SubCategoryRepository subCatergoryRepository;
 
     @InjectMocks
     private StudyRecordCategoryService studyRecordCategoryService;

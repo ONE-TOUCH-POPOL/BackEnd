@@ -5,7 +5,7 @@ import com.onepopol.studyrecord.dto.MainCategoryCreate;
 import com.onepopol.studyrecord.dto.MainCategoryResponse;
 import com.onepopol.studyrecord.dto.SubCategoryCreate;
 import com.onepopol.studyrecord.repository.MainCategoryRepository;
-import com.onepopol.studyrecord.repository.SubCatergoryRepository;
+import com.onepopol.studyrecord.repository.SubCategoryRepository;
 import com.onepopol.studyrecord.repository.entity.MainCategory;
 import com.onepopol.utils.ApiError;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class StudyRecordCategoryService {
     private final MainCategoryRepository mainCategoryRepository;
-    private final SubCatergoryRepository subCatergoryRepository;
+    private final SubCategoryRepository subCategoryRepository;
     @PersistenceContext
     private EntityManager em;
 
