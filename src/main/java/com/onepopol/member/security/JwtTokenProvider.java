@@ -1,7 +1,9 @@
 package com.onepopol.member.security;
 
+import com.onepopol.config.BaseException;
 import com.onepopol.member.dto.TokenDto;
 import com.onepopol.member.service.MemberRedisService;
+import com.onepopol.utils.ApiError;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -16,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Key;
 import java.util.Date;
+
+import static com.onepopol.member.error.MemberErrorCode.INVALID_ACCESS_TOKEN;
 
 @Slf4j
 @Component
@@ -151,7 +155,7 @@ public class JwtTokenProvider implements InitializingBean {
         } catch(ExpiredJwtException e) {
             return false;
         } catch (Exception e) {
-            return false;
+            throw new BaseException(new ApiError(INVALID_ACCESS_TOKEN.getMessage(), INVALID_ACCESS_TOKEN.getCode()));
         }
     }
 

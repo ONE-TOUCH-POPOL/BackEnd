@@ -1,15 +1,14 @@
 package com.onepopol.member.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.onepopol.config.BaseException;
 import com.onepopol.utils.Apiutils;
-import io.jsonwebtoken.IncorrectClaimException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -18,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static com.onepopol.member.error.MemberErrorCode.*;
+import static com.onepopol.member.error.MemberErrorCode.ACCESS_TOKEN_EXPIRED;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -57,7 +56,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     }
                 }
             }
-        }catch (IncorrectClaimException e) { // 잘못된 토큰일 경우
+        }catch (BaseException e) { // 잘못된 토큰일 경우
             SecurityContextHolder.clearContext();
             log.debug("Invalid JWT token.");
 
@@ -66,23 +65,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            String responseBody = objectMapper.writeValueAsString(Apiutils.error(INVALID_ACCESS_TOKEN.getMessage(),INVALID_ACCESS_TOKEN.getCode()));
+            String responseBody = objectMapper.writeValueAsString(Apiutils.error(e.getApiError()));
 
             response.getWriter().write(responseBody);
             response.getWriter().flush();
-        } catch (UsernameNotFoundException e) { // 회원을 찾을 수 없을 경우
-            SecurityContextHolder.clearContext();
-            log.debug("Can't find user.");
-
-            response.setCharacterEncoding("utf-8");
-            response.setStatus(HttpStatus.OK.value());
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            String responseBody = objectMapper.writeValueAsString(Apiutils.error(USER_NOT_FOUND.getMessage(), USER_NOT_FOUND.getCode()));
-
-            response.getWriter().write(responseBody);
-            response.getWriter().flush();
+            return;
         }
 
         filterChain.doFilter(request, response);
