@@ -18,8 +18,6 @@ import java.time.LocalDate;
 class StudyRecordTest {
     @Autowired
     private StudyRecordRepository studyRecordRepository;
-    @Autowired
-    private MemberRepository memberRepository;
     private final static Long USER_ID = 1L;
     private static Member member;
 

@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -26,21 +27,27 @@ public class StudyRecord extends BaseEntity {
     @Lob
     private String content;
 
-    private String category;
-
     private LocalDate recordDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "sub_code")
+    private SubCategory subCategory;
+
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "studyrecord_id")
+    private List<Badge> badges;
 
     @Builder
-    public StudyRecord(String title, String content, String category, LocalDate recordDate, Member member) {
+    public StudyRecord(String title, String content, SubCategory subCategory, LocalDate recordDate, Member member, List<Badge> badges) {
         this.title = title;
         this.content = content;
-        this.category = category;
         this.recordDate = recordDate;
         this.member = member;
+        this.subCategory = subCategory;
+        this.badges = badges;
     }
 }
