@@ -37,7 +37,7 @@ public class StudyRecordCreate {
     @NoArgsConstructor
     @AllArgsConstructor
     @ToString
-    static class BadgeCreate {
+    public static class BadgeCreate {
         private Long badgeCode;
     }
 

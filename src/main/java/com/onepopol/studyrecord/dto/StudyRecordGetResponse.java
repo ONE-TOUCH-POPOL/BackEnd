@@ -1,5 +1,6 @@
 package com.onepopol.studyrecord.dto;
 
+import com.onepopol.studyrecord.repository.entity.Badge;
 import com.onepopol.studyrecord.repository.entity.StudyRecord;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,6 +35,20 @@ public class StudyRecordGetResponse {
     @Setter
     @NoArgsConstructor
     @ToString
+    public static class BadgeResponse {
+        private Long badgeCode;
+        private String badgeName;
+
+        public BadgeResponse(Badge badge) {
+            this.badgeCode = badge.getBadgeCategory().getId();
+            this.badgeName = badge.getBadgeCategory().getBadgeName();
+        }
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @ToString
     public static class StudyRecordDetail {
         private Long id;
 
@@ -44,6 +59,8 @@ public class StudyRecordGetResponse {
         private Long memberId;
 
         private LocalDate recordDate;
+
+        private List<BadgeResponse> badges;
 
         public StudyRecordDetail(StudyRecord studyRecord) {
             this.id = studyRecord.getId();

@@ -3,11 +3,11 @@ package com.onepopol.studyrecord.service;
 
 import com.onepopol.studyrecord.dto.StudyRecordCreate;
 import com.onepopol.studyrecord.dto.StudyRecordGetResponse;
+import com.onepopol.studyrecord.repository.BadgeCategoryRepository;
+import com.onepopol.studyrecord.repository.BadgeRepository;
 import com.onepopol.studyrecord.repository.StudyRecordRepository;
 import com.onepopol.studyrecord.repository.SubCategoryRepository;
-import com.onepopol.studyrecord.repository.entity.MainCategory;
-import com.onepopol.studyrecord.repository.entity.StudyRecord;
-import com.onepopol.studyrecord.repository.entity.SubCategory;
+import com.onepopol.studyrecord.repository.entity.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +27,8 @@ import java.util.Map;
 public class StudyRecordCrudService {
     private final StudyRecordRepository studyRecordRepository;
     private final SubCategoryRepository subCategoryRepository;
+    private final BadgeCategoryRepository badgeCategoryRepository;
+    private final BadgeRepository badgeRepository;
     @PersistenceContext
     private EntityManager em;
 
@@ -33,7 +36,16 @@ public class StudyRecordCrudService {
         SubCategory subCategory = subCategoryRepository.getReferenceById(studyRecordCreate.getCodeValue());
         StudyRecord studyRecord = studyRecordCreate.toEntity();
         studyRecord.setSubCategory(subCategory);
-        studyRecordRepository.save(studyRecord);
+        em.persist(studyRecord);
+        Long studyRecordId = studyRecord.getId();
+        for (StudyRecordCreate.BadgeCreate badgeCreate : studyRecordCreate.getBadges()) {
+            BadgeCategory badgeCategory = badgeCategoryRepository.getReferenceById(badgeCreate.getBadgeCode());
+            Badge badge = Badge.builder()
+                    .studyRecordId(studyRecordId)
+                    .badgeCategory(badgeCategory)
+                    .build();
+            em.persist(badge);
+        }
     }
 
     public List<StudyRecordGetResponse> getStudyRecordByUserId(Long userId) {
@@ -47,7 +59,7 @@ public class StudyRecordCrudService {
 
         Map<Long, Integer> mainCategoryIndex = new HashMap<>();
         Map<Long, Integer> subCategoryIndex = new HashMap<>();
-
+        
         for (StudyRecord studyRecord : resStudyRecord) {
             SubCategory subCategory = studyRecord.getSubCategory();
             MainCategory mainCategory = subCategory.getMainCategory();
@@ -82,7 +94,13 @@ public class StudyRecordCrudService {
 
             // 디테일 부분 셋팅
             List<StudyRecordGetResponse.StudyRecordDetail> studyRecordDetailList = subCategories.getStudyRecordDeatilList();
-            studyRecordDetailList.add(new StudyRecordGetResponse.StudyRecordDetail(studyRecord));
+            StudyRecordGetResponse.StudyRecordDetail studyRecordDetail = new StudyRecordGetResponse.StudyRecordDetail(studyRecord);
+            studyRecordDetail.setBadges(studyRecord
+                    .getBadges()
+                    .stream()
+                    .map(StudyRecordGetResponse.BadgeResponse::new)
+                    .collect(Collectors.toList()));
+            studyRecordDetailList.add(studyRecordDetail);
         }
         return studyRecordGetResponses;
     }

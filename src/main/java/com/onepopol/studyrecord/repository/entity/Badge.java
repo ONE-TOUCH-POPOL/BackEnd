@@ -1,6 +1,8 @@
 package com.onepopol.studyrecord.repository.entity;
 
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -9,6 +11,7 @@ import java.util.Objects;
 @Entity
 @Data
 @IdClass(Badge.BadgePK.class)
+@NoArgsConstructor
 @Table(name = "badge")
 public class Badge {
 
@@ -16,7 +19,7 @@ public class Badge {
     @Column(name = "studyrecord_id")
     private Long studyRecordId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "badge_category_code")
     private BadgeCategory badgeCategory;
 
@@ -40,5 +43,11 @@ public class Badge {
             return Objects.hash(studyRecordId, badgeCategory.getId());
         }
     }
-    
+
+    @Builder
+    public Badge(Long studyRecordId, BadgeCategory badgeCategory) {
+        this.studyRecordId = studyRecordId;
+        this.badgeCategory = badgeCategory;
+    }
+
 }

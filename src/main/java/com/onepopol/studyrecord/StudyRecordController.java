@@ -30,7 +30,7 @@ public class StudyRecordController {
     private final StudyRecordBadgeService studyRecordBadgeService;
 
     @ResponseBody
-    @PostMapping("/create")
+    @PostMapping()
     public ApiResult<?> studyRecordAdd(@Valid @RequestBody StudyRecordCreate studyRecordCreate, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             // 유효성 검사 실패 시 처리
@@ -39,10 +39,11 @@ public class StudyRecordController {
         }
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         MemberDetailsImpl userDetails = (MemberDetailsImpl) authentication.getPrincipal();
-        Member member = new Member().builder()
+        Member member = Member.builder()
                 .id(userDetails.getUserId())
                 .build();
         studyRecordCreate.setMember(member);
+        System.out.println(studyRecordCreate);
         studyRecordCrudService.addStudyRecord(studyRecordCreate);
         return Apiutils.success("학습 기록 작성 성공");
     }

@@ -27,7 +27,6 @@ public class StudyRecord extends BaseEntity {
     @Lob
     private String content;
 
-
     private LocalDate recordDate;
 
     @ManyToOne()
@@ -38,16 +37,17 @@ public class StudyRecord extends BaseEntity {
     @JoinColumn(name = "sub_code")
     private SubCategory subCategory;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "studyrecord_id")
     private List<Badge> badges;
 
     @Builder
-    public StudyRecord(String title, String content, SubCategory subCategory, LocalDate recordDate, Member member) {
+    public StudyRecord(String title, String content, SubCategory subCategory, LocalDate recordDate, Member member, List<Badge> badges) {
         this.title = title;
         this.content = content;
         this.recordDate = recordDate;
         this.member = member;
         this.subCategory = subCategory;
+        this.badges = badges;
     }
 }
