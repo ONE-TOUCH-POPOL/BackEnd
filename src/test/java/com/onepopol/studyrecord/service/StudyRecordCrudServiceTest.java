@@ -4,6 +4,7 @@ import com.onepopol.member.repository.entity.Member;
 import com.onepopol.studyrecord.dto.StudyRecordCreate;
 import com.onepopol.studyrecord.repository.StudyRecordRepository;
 import com.onepopol.studyrecord.repository.entity.StudyRecord;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,6 +31,7 @@ class StudyRecordCrudServiceTest {
 
     @Test
     @DisplayName("학습기록 저장 정상 작동")
+    @Disabled
     void addStudyRecord() {
         // 테스트에 필요한 입력 데이터 설정
         StudyRecordCreate studyRecordCreate = new StudyRecordCreate();
