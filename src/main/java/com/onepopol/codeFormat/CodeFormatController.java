@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/codeFormat")
+@RequestMapping("/api/v1/code-format")
 @CrossOrigin
 public class CodeFormatController {
 
