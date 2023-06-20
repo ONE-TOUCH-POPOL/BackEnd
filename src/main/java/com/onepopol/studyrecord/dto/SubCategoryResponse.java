@@ -11,10 +11,10 @@ import lombok.*;
 @AllArgsConstructor
 public class SubCategoryResponse {
     private Long id;
-    private String code_name;
+    private String codeName;
 
     public SubCategoryResponse(SubCategory subCategory) {
         this.id = subCategory.getId();
-        this.code_name = subCategory.getCode_name();
+        this.codeName = subCategory.getCodeName();
     }
 }

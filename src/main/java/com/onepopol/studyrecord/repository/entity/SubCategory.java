@@ -23,11 +23,11 @@ public class SubCategory extends BaseEntity {
     @JoinColumn(name = "main_code")
     private MainCategory mainCategory;
 
-    private String code_name;
+    private String codeName;
 
     @Builder
-    public SubCategory(String code_name, MainCategory mainCategory) {
-        this.code_name = code_name;
+    public SubCategory(String codeName, MainCategory mainCategory) {
+        this.codeName = codeName;
         this.mainCategory = mainCategory;
     }
 }

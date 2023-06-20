@@ -59,7 +59,7 @@ public class StudyRecordCrudService {
 
         Map<Long, Integer> mainCategoryIndex = new HashMap<>();
         Map<Long, Integer> subCategoryIndex = new HashMap<>();
-        
+
         for (StudyRecord studyRecord : resStudyRecord) {
             SubCategory subCategory = studyRecord.getSubCategory();
             MainCategory mainCategory = subCategory.getMainCategory();
@@ -77,7 +77,7 @@ public class StudyRecordCrudService {
 
             StudyRecordGetResponse studyRecordGetResponse = studyRecordGetResponses.get(curMainIndex);
             studyRecordGetResponse.setMainCode(mainCategory.getId());
-            studyRecordGetResponse.setMainCodeName(mainCategory.getCode_name());
+            studyRecordGetResponse.setMainCodeName(mainCategory.getCodeName());
 
             // 서브 카테고리 셋팅
             List<StudyRecordGetResponse.SubCategories> subCategoriesList = studyRecordGetResponse.getSubCategories();
@@ -90,7 +90,7 @@ public class StudyRecordCrudService {
             }
             StudyRecordGetResponse.SubCategories subCategories = subCategoriesList.get(curSubIndex);
             subCategories.setSubCode(subCategory.getId());
-            subCategories.setSubCodeName(subCategory.getCode_name());
+            subCategories.setSubCodeName(subCategory.getCodeName());
 
             // 디테일 부분 셋팅
             List<StudyRecordGetResponse.StudyRecordDetail> studyRecordDetailList = subCategories.getStudyRecordDeatilList();

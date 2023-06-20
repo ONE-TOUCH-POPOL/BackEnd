@@ -15,7 +15,7 @@ public class BadgeCategoryCreate {
     private String badgeName;
 
     public BadgeCategory toEntity() {
-        return new BadgeCategory().builder()
+        return BadgeCategory.builder()
                 .badgeName(badgeName)
                 .build();
     }
