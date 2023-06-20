@@ -10,9 +10,6 @@ import com.onepopol.member.service.MemberManagementService;
 import com.onepopol.utils.ApiResult;
 import com.onepopol.utils.Apiutils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpCookie;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -43,7 +40,6 @@ public class MemberController {
             List<FieldError> fieldErrors = bindingResult.getFieldErrors();
             throw new ValidationException(fieldErrors);
         }
-
         try {
             memberManagementService.registerUser(memberSignupRequest);
             return Apiutils.success("회원가입 성공");
@@ -54,23 +50,26 @@ public class MemberController {
 
     // 로그인 -> 토큰 발급
     @PostMapping("/login")
-    public ApiResult<?> login(@RequestBody @Valid MemberLoginRequest memberLoginRequest, BindingResult bindingResult, HttpServletResponse response) {
+    public ApiResult<?> login(@RequestBody MemberLoginRequest memberLoginRequest, HttpServletResponse response) {
         // User 등록 및 Refresh Token 저장
         TokenDto tokenDto = memberAuthenticationService.login(memberLoginRequest);
 
         // RT 저장
-        HttpCookie httpCookie = ResponseCookie.from("refresh-token", tokenDto.getRefreshToken())
-                .maxAge(COOKIE_EXPIRATION)
-                .path("/")
-                .httpOnly(false)
-                .secure(false)
-//                .sameSite("None")
-                .build();
+//        HttpCookie httpCookie = ResponseCookie.from("refresh-token", tokenDto.getRefreshToken())
+//                .maxAge(COOKIE_EXPIRATION)
+//                .path("/")
+//                .httpOnly(true)
+//                .secure(true)
+//                .build();
+        // Header & Cookie 사용 시
+//        response.setHeader(HttpHeaders.SET_COOKIE, httpCookie.toString());
+//        response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + tokenDto.getAccessToken());
 
-        response.setHeader(HttpHeaders.SET_COOKIE, httpCookie.toString());
-        response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + tokenDto.getAccessToken());
 
-        return Apiutils.success(tokenDto.getRefreshToken());
+        // responseBody 사용 시
+        tokenDto.setAccessToken("Bearer " + tokenDto.getAccessToken());
+
+        return Apiutils.success(tokenDto);
     }
 
     // 토큰 재발급
@@ -80,50 +79,44 @@ public class MemberController {
                                 HttpServletResponse response) {
         try {
             String requestRefreshToken = refreshToken.get("refresh-token");
-            System.out.println(requestRefreshToken);
-            System.out.println(requestAccessToken);
             TokenDto reissuedTokenDto = memberAuthenticationService.reissue(requestAccessToken, requestRefreshToken);
 
             // RT 저장
-            ResponseCookie responseCookie = ResponseCookie.from("refresh-token", reissuedTokenDto.getRefreshToken())
-                    .maxAge(COOKIE_EXPIRATION)
-                    .path("/")
-                    .httpOnly(false)
-                    .secure(false)
-//                .sameSite("None")
-                    .build();
-            System.out.println(responseCookie.toString());
-            response.setHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
-            response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + reissuedTokenDto.getAccessToken());
+//            ResponseCookie responseCookie = ResponseCookie.from("refresh-token", reissuedTokenDto.getRefreshToken())
+//                    .maxAge(COOKIE_EXPIRATION)
+//                    .path("/")
+//                    .httpOnly(true)
+//                    .secure(true)
+//                    .build();
+//            response.setHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
+//            response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + reissuedTokenDto.getAccessToken());
+
+            // requestBody로 token 정보 리턴하는 경우
+            reissuedTokenDto.setAccessToken("Bearer " + reissuedTokenDto.getAccessToken());
+//            reissuedTokenDto.setRefreshToken(null);
 
             return Apiutils.success(reissuedTokenDto);
         } catch (BaseException e) {
             // Cookie 삭제 후 재로그인 유도
-            ResponseCookie responseCookie = ResponseCookie.from("refresh-token", "")
-                    .maxAge(0)
-                    .path("/")
-                    .build();
-            response.setHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
+//            ResponseCookie responseCookie = ResponseCookie.from("refresh-token", "")
+//                    .maxAge(0)
+//                    .path("/")
+//                    .build();
+//            response.setHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
             throw new BaseException(e.getApiError());
         }
-    }
-
-    @PostMapping("/test")
-    public ApiResult<?> test(@CookieValue(name = "refresh-token") String requestRefreshToken) {
-        System.out.println(requestRefreshToken);
-        return Apiutils.success("Access Token 재발급 성공");
     }
 
     // 로그아웃
     @PostMapping("/logout")
     public ApiResult<?> logout(@RequestHeader("Authorization") String requestAccessToken, HttpServletResponse response) {
         try {
-            ResponseCookie responseCookie = ResponseCookie.from("refresh-token", "")
-                    .maxAge(0)
-                    .path("/")
-                    .build();
-
-            response.setHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
+//            ResponseCookie responseCookie = ResponseCookie.from("refresh-token", "")
+//                    .maxAge(0)
+//                    .path("/")
+//                    .build();
+//
+//            response.setHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
 
             memberAuthenticationService.logout(requestAccessToken);
 
