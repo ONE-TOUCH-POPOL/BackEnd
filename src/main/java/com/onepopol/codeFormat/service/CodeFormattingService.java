@@ -1,23 +1,41 @@
 package com.onepopol.codeFormat.service;
 
 import com.google.googlejavaformat.java.Formatter;
+import com.google.googlejavaformat.java.FormatterException;
+import com.onepopol.config.BaseException;
+import com.onepopol.utils.ApiError;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+
+import static com.onepopol.codeFormat.error.CodeFormatErrorCode.FAIL_FORMATTING;
+import static com.onepopol.codeFormat.error.CodeFormatErrorCode.UNSUPPORTED_LANGUAGE;
 
 @Service
 public class CodeFormattingService {
 
     public String formatCode(String language, String sourceCode) {
         try {
+            switch(language){
+                case "java":{
+                    return formatJava(sourceCode);
+                }
+                default: {
+                    throw new BaseException(new ApiError(UNSUPPORTED_LANGUAGE.getMessage(), UNSUPPORTED_LANGUAGE.getCode()));
+                }
+            }
+        } catch (BaseException e) {
+            throw new BaseException(e.getApiError());
+        }
+    }
+    private String formatJava(String sourceCode){
+        try{
             Formatter formatter = new Formatter();
             String formattedCode = formatter.formatSource(sourceCode);
 
             return new String(formattedCode);
-        } catch (Exception e) {
-            // 포맷팅 및 정렬 실패 시 처리
-            e.printStackTrace();
-            return "실패";
+        }catch(FormatterException e){
+            throw new BaseException(new ApiError(FAIL_FORMATTING.getMessage(), FAIL_FORMATTING.getCode()));
         }
     }
 
