@@ -1,8 +1,7 @@
 package com.onepopol.studyrecord.service;
 
 
-import com.onepopol.studyrecord.dto.StudyRecordCreate;
-import com.onepopol.studyrecord.dto.StudyRecordGetResponse;
+import com.onepopol.studyrecord.dto.*;
 import com.onepopol.studyrecord.repository.BadgeCategoryRepository;
 import com.onepopol.studyrecord.repository.BadgeRepository;
 import com.onepopol.studyrecord.repository.StudyRecordRepository;
@@ -72,35 +71,31 @@ public class StudyRecordCrudService {
             }
             //
             if (curMainIndex == studyRecordGetResponses.size()) {
-                studyRecordGetResponses.add(new StudyRecordGetResponse());
+                studyRecordGetResponses.add(new StudyRecordGetResponse(mainCategory));
             }
 
             StudyRecordGetResponse studyRecordGetResponse = studyRecordGetResponses.get(curMainIndex);
-            studyRecordGetResponse.setMainCode(mainCategory.getId());
-            studyRecordGetResponse.setMainCodeName(mainCategory.getCodeName());
 
             // 서브 카테고리 셋팅
-            List<StudyRecordGetResponse.SubCategories> subCategoriesList = studyRecordGetResponse.getSubCategories();
-            int curSubIndex = subCategoryIndex.getOrDefault(subCategory.getId(), subCategoriesList.size());
-            if (curSubIndex == subCategoriesList.size()) {
+            List<SubCategoryResponse> subCategoryResponseList = studyRecordGetResponse.getSubCategories();
+            int curSubIndex = subCategoryIndex.getOrDefault(subCategory.getId(), subCategoryResponseList.size());
+            if (curSubIndex == subCategoryResponseList.size()) {
                 subCategoryIndex.put(subCategory.getId(), curSubIndex);
             }
-            if (curSubIndex == subCategoriesList.size()) {
-                subCategoriesList.add(new StudyRecordGetResponse.SubCategories());
+            if (curSubIndex == subCategoryResponseList.size()) {
+                subCategoryResponseList.add(new SubCategoryResponse(subCategory));
             }
-            StudyRecordGetResponse.SubCategories subCategories = subCategoriesList.get(curSubIndex);
-            subCategories.setSubCode(subCategory.getId());
-            subCategories.setSubCodeName(subCategory.getCodeName());
+            SubCategoryResponse subCategoryResponse = subCategoryResponseList.get(curSubIndex);
 
             // 디테일 부분 셋팅
-            List<StudyRecordGetResponse.StudyRecordDetail> studyRecordDetailList = subCategories.getStudyRecordDeatilList();
-            StudyRecordGetResponse.StudyRecordDetail studyRecordDetail = new StudyRecordGetResponse.StudyRecordDetail(studyRecord);
+            StudyRecordDetail studyRecordDetail = new StudyRecordDetail(studyRecord);
             studyRecordDetail.setBadges(studyRecord
                     .getBadges()
                     .stream()
-                    .map(StudyRecordGetResponse.BadgeResponse::new)
+                    .map(BadgeResponse::new)
                     .collect(Collectors.toList()));
-            studyRecordDetailList.add(studyRecordDetail);
+            
+            subCategoryResponse.addStudyRecordDetail(studyRecordDetail);
         }
         return studyRecordGetResponses;
     }

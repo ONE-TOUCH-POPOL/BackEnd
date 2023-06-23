@@ -12,8 +12,11 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @ToString
 public class MainCategoryResponse {
+    
     private Long id;
+
     private String code_name;
+
     private List<SubCategoryResponse> subCategoryList;
 
     public MainCategoryResponse(MainCategory mainCategory) {
