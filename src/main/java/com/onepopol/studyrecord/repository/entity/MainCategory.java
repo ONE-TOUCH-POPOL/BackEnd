@@ -20,18 +20,18 @@ public class MainCategory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String code_name;
+    private String codeName;
 
     @OneToMany(mappedBy = "mainCategory", cascade = CascadeType.ALL)
     private List<SubCategory> subCategory = new ArrayList<>();
-    
+
     public void addSubCategory(SubCategory addSubCategory) {
         subCategory.add(addSubCategory);
         addSubCategory.setMainCategory(this);
     }
 
     @Builder
-    public MainCategory(String code_name) {
-        this.code_name = code_name;
+    public MainCategory(String codeName) {
+        this.codeName = codeName;
     }
 }

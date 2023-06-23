@@ -24,7 +24,7 @@ public class SubCategoryCreate {
     public SubCategory toEntity() {
         return SubCategory
                 .builder()
-                .code_name(subCategoryName)
+                .codeName(subCategoryName)
                 .build();
     }
 }

@@ -16,7 +16,7 @@ public class MainCategoryCreate {
 
     public MainCategory toEntity() {
         return MainCategory.builder()
-                .code_name(codeName)
+                .codeName(codeName)
                 .build();
     }
 }
