@@ -15,10 +15,35 @@ repositories {
 }
 
 dependencies {
+	// spring boot
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	// lombok
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	// DB
 	runtimeOnly 'com.mysql:mysql-connector-j'
+	// spring security
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	// Redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
+	// jwt
+	implementation 'javax.xml.bind:jaxb-api'
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.1'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.1'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.1'
+	// oauth2
+	implementation 'org.springframework.security:spring-security-oauth2-core'
+	// test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'io.projectreactor:reactor-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+
+	// google java format
+	implementation 'com.google.googlejavaformat:google-java-format:1.17.0'
 }
 
 tasks.named('test') {

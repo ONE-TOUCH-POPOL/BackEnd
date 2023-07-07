@@ -2,12 +2,13 @@ package com.onepopol;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 
-@SpringBootApplication
+@SpringBootApplication(exclude = SecurityAutoConfiguration.class)
 public class OnepopolApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(OnepopolApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(OnepopolApplication.class, args);
+    }
 
 }
